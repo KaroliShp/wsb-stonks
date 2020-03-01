@@ -1,6 +1,6 @@
 import praw
 
-from nlp_engine.io import write_to_file
+from app.tasks.nlp_engine.io import write_to_file
 
 
 CLIENT_ID = '2ocFsBoC1x3Ikw'
@@ -22,7 +22,7 @@ def get_posts_today(reddit):
 def main():
     reddit = authenticate()
     data = get_posts_today(reddit)
-    write_to_file(data)
+    return data
 
 
 if __name__ == '__main__':

@@ -37,23 +37,21 @@ def read_from_file():
             score = int(decode_data(items[1]))
             selftext = decode_data(items[2])
             created = float(decode_data(items[3]))
-            data.append([title, score, selftext, created])
+            data.append({'title' : title, 'score' : score, 'selftext' : selftext, 'created' : created})
     
     return data
 
 
 def read_stocks():
-    symbol_data = set()
-    security_data = set()
+    data = []
 
-    with open('company_list.csv', 'r') as f:
+    with open('app/tasks/nlp_engine/company_list.csv', 'r') as f:
         raw_data = f.readlines()
 
         for line in raw_data:
             items = line.split(',')
             symbol = items[0]
             security = items[1].strip()
-            symbol_data.add(symbol.lower())
-            security_data.add(security.lower())
+            data.append((symbol.lower(), security.lower()))
     
-    return symbol_data, security_data
+    return data

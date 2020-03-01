@@ -1,8 +1,7 @@
 import nltk
-from nlp_engine.io import read_from_file, read_stocks
 
 
-def get_stock_frequency(data, symbol_data, security_data):
+def get_stock_frequency(data, symbol_data):
     frequency = {}
 
     for item in data:
@@ -17,8 +16,6 @@ def get_stock_frequency(data, symbol_data, security_data):
         for token in tokens:
             if token.lower() in symbol_data and token.isupper():
                 stocks_document.add(token)
-            elif token.lower() in security_data:
-                stocks_document.add(token)
 
         # Add 1 to frequency of mentioned stocks
         for document in stocks_document:
@@ -28,11 +25,3 @@ def get_stock_frequency(data, symbol_data, security_data):
                 frequency[document] = 1
     
     return frequency
-        
-
-
-if __name__ == '__main__':
-    data = read_from_file()
-    symbol_data, security_data = read_stocks()
-
-    print(get_stock_frequency(data, symbol_data, security_data))
