@@ -7,31 +7,29 @@ import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 
 export default function StocksFrequency() {
-  const [stocks, setStocks] = useState([]);
+  const [keywords, setKeywords] = useState([]);
 
   useEffect(() => {
-    fetch('/stock/frequency').then(res => res.json()).then(data => {
-      setStocks(data);
+    fetch('/keyword/top').then(res => res.json()).then(data => {
+      setKeywords(data);
     });
   }, []);
 
   return (
     <React.Fragment>
-      <Title>Most Popular Stocks</Title>
+      <Title>Currently Trending</Title>
       <Table size="big">
         <TableHead>
           <TableRow>
-            <TableCell>Symbol</TableCell>
-            <TableCell>Security</TableCell>
-            <TableCell>Post Mentions</TableCell>
+            <TableCell>Keywords</TableCell>
+            <TableCell>Mentions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {stocks.map(stock => (
-            <TableRow key={stock.id}>
-              <TableCell>{stock.symbol}</TableCell>
-              <TableCell>{stock.security}</TableCell>
-              <TableCell>{stock.mentions}</TableCell>
+          {keywords.map(keyword => (
+            <TableRow key={keyword.id}>
+              <TableCell>{keyword.keyword}</TableCell>
+              <TableCell>{keyword.mentions}</TableCell>
             </TableRow>
           ))}
         </TableBody>

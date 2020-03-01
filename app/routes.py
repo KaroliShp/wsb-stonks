@@ -8,4 +8,4 @@ def stock_frequency():
     Display current stock frequency from database
     """
     stock_frequency = db_client.find_all('analysis-stock-frequency', {})
-    return jsonify(stock_frequency)
+    return jsonify(stock_frequency[:10])
