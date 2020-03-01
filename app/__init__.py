@@ -25,7 +25,7 @@ def job_update_db():
 # Job scheduling
 """
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=job_update_db, trigger="interval", seconds=120)
+scheduler.add_job(func=job_update_db, trigger="interval", minutes=30)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 """
