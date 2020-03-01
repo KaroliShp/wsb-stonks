@@ -1,16 +1,13 @@
-from flask import Flask, jsonify
-from app.db.mongo_client import MongoPostRepository
+from flask import Flask
+from config import Config
+from app.mongo_client import MongoPostRepository
 
+
+# Handle application creation
 app = Flask(__name__)
+app.config.from_object(Config)
 
+# Handle database connection
 db_client = MongoPostRepository('wsb-stonks')
 
-
-@app.route('/stock/frequency')
-def stock_frequency():
-    """
-    Display current stock frequency from database
-    """
-    stock_frequency = db_client.find_all('analysis-stock-frequency', {})
-    return jsonify(stock_frequency)
-    
+from app import routes

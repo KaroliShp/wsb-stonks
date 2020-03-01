@@ -1,3 +1,4 @@
+APScheduler==3.6.3
 certifi==2019.11.28
 chardet==3.0.4
 Click==7.0
@@ -14,8 +15,12 @@ numpy==1.18.1
 praw==6.5.1
 prawcore==1.0.1
 pymongo==3.10.1
+pytz==2019.3
+redis==3.4.1
 requests==2.23.0
+rq==1.2.2
 six==1.14.0
+tzlocal==2.0.0
 update-checker==0.16
 urllib3==1.25.8
 websocket-client==0.57.0
