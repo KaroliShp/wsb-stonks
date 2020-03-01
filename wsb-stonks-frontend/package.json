@@ -1,6 +1,6 @@
 {
-  "name": "create-react-app",
-  "version": "4.0.0",
+  "name": "wsb-stonks-frontend",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
