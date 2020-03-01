@@ -27,3 +27,7 @@ class MongoPostRepository(object):
 
     def create(self, collection, item):
         return self.db[collection].insert_one(item)
+
+    
+    def delete_many(self, collection, selector):
+        self.db[collection].delete_many(selector)
