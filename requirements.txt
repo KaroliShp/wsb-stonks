@@ -2,6 +2,7 @@ APScheduler==3.6.3
 certifi==2019.11.28
 chardet==3.0.4
 Click==7.0
+dnspython==1.16.0
 Flask==1.1.1
 Flask-Cors==3.0.7
 Flask-PyMongo==2.3.0

@@ -1,5 +1,6 @@
 import os
 from pymongo import MongoClient
+from pymongo import MongoClient
 
 
 class MongoPostRepository(object):
@@ -7,7 +8,16 @@ class MongoPostRepository(object):
 
     def __init__(self, database):
         mongo_url = os.environ.get('MONGO_URL')
-        self.db = MongoClient(mongo_url)[database]
+        client = MongoClient(mongo_url)
+        try:
+            # Check if connected to MongoDB Atlas
+            # The ismaster command is cheap and does not require auth.
+            client.admin.command('ismaster')
+        except ConnectionFailure:
+            # TODO: change to log
+            print("Server not available")
+
+        self.db = client[database]
 
 
     def find_all(self, collection, selector):
