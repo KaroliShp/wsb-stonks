@@ -5,7 +5,7 @@ To run everything:
 ```
 $ source setup.bash
 $ flask run
-$ cd wsb-stonks-react
+$ cd wsb-stonks-frontend
 $ yarn start
 ```
 
