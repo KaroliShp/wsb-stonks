@@ -157,3 +157,6 @@ yarn-debug.log*
 yarn-error.log*
 
 setup.bash
+
+nltk_data/
+env_variables.yaml

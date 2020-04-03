@@ -25,12 +25,11 @@ def job_update_db():
     print('Job finished')
 
 # Job scheduling
-"""
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=job_update_db, trigger="interval", minutes=30)
+scheduler = BackgroundScheduler(timezone="US/Eastern")
+scheduler.add_job(func=job_update_db, trigger="interval", minutes=15)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
-"""
+
 
 #job_update_db()
 

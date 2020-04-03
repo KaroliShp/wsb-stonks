@@ -1,0 +1,5 @@
+runtime: python37
+entrypoint: gunicorn -b :$PORT main:app --timeout 120
+
+includes:
+  - env_variables.yaml
