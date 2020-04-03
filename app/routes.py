@@ -1,6 +1,9 @@
 from flask import jsonify
 from app import app, db_client
 
+@app.route('/', methods=['GET'])
+def home():
+    return "Hello World"
 
 @app.route('/stock/frequency', methods=['GET'])
 def stock_frequency():
