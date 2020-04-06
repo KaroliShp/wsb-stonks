@@ -1,4 +1,5 @@
 import nltk
+nltk.data.path.append('./nltk_data/')
 from nltk.corpus import stopwords
 from app.tasks.nlp_engine.io import read_from_file
 from nltk.tokenize import TweetTokenizer
