@@ -10,7 +10,7 @@ export default function StocksFrequency() {
   const [stocks, setStocks] = useState([]);
 
   useEffect(() => {
-    fetch('/stock/frequency').then(res => res.json()).then(data => {
+    fetch('/api/stock/frequency').then(res => res.json()).then(data => {
       setStocks(data);
     });
   }, []);
