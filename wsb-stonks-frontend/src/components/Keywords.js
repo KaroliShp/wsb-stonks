@@ -10,7 +10,7 @@ export default function StocksFrequency() {
   const [keywords, setKeywords] = useState([]);
 
   useEffect(() => {
-    fetch('/keyword/top').then(res => res.json()).then(data => {
+    fetch('/api/keyword/top').then(res => res.json()).then(data => {
       setKeywords(data);
     });
   }, []);
