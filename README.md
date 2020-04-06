@@ -1,5 +1,12 @@
 # WSB stonks
 
+Check our project out at [https://wsb-stonks-271205.appspot.com/](https://wsb-stonks-271205.appspot.com/)
+
+## About
+We are scraping r/WSB subreddit and doing some interesting NLP analysis about stock mentions, their popularity across time, and keyword mentions.
+
+To achieve this, we have created a Flask API that handles interaction with MongoDB NoSQL database and schedules cron jobs to scrape r/WSB with Reddit API. The visualizations of the data are rendered by a React web app, which accesses Flask API via proxy. Both frontend and backend services are hosted on GCP App Engine Standard serverless computing environment, while for MongoDB service, we use a MongoDB Atlas cloud cluster. 
+
 ## To run locally:
 Step 0:
 - comment out line 2 in backend/app/tasks/nlp_engine/analysis.py (if you downloaded NLTK data to some central location on your machine)
