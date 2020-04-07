@@ -9,6 +9,10 @@ export default function Copyright() {
         <Link color="inherit" href="https://github.com/KaroliShp">
           Karolishp
         </Link>{' '}
+        and &nbsp;
+        <Link color="inherit" href="https://github.com/r-k-jonynas">
+          r-k-jonynas
+        </Link>{' '}
         {new Date().getFullYear()}
         {'.'}
       </Typography>
