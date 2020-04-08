@@ -7,10 +7,9 @@ import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 
-from app.tasks.tasks import update_posts, get_posts, update_companies, get_companies, update_frequency_statistics
-from app.tasks.nlp_engine.analysis import tokenize_posts, tokenize_posts_mwe, lemmatize_words, get_stock_frequency
 from app.background_job.post_fetcher import fetch_posts
-from app.background_job.stock_frequency import calculate_stock_frequency
+from app.background_job.post_processor import process_posts
+from app.background_job.stock_frequency import get_stock_freq_historic, get_stock_freq_top
 
 # Handle application creation
 app = Flask(__name__)
@@ -19,36 +18,33 @@ app.config.from_object(Config)
 # Handle database connection
 db_client = MongoPostRepository('wsb-stonks')
 
-def job_update_db():
-    print('Starting a job')
-    update_companies(db_client)
-    update_posts(db_client)
-    symbols, company_names = get_companies(db_client)
-    update_frequency_statistics(db_client, get_posts(db_client), symbols, company_names)
-    print('Job finished')
-
+# Job scheduling
 def background_job():
     # Get the latest update
     last_update = datetime.now() - timedelta(hours=1, minutes=0)
+    update_date = datetime.now()
     
     # Fetch new created posts since last update
     new_posts = fetch_posts(db_client, last_update)
 
-    # Calculate stock frequency of the new posts
-    calculate_stock_frequency(new_posts)
+    # Process post information and store in DB
+    process_posts(db_client, new_posts, update_date)
 
-    # Update frequency tables
+    # Calculate stock frequency of all posts historically
+    for stock in ['SPY', 'LOL']:
+        get_stock_freq_historic(db_client, stock)
 
+    # Calculate most frequent stocks from all posts historically
+    get_stock_freq_top(db_client)
 
-# Job scheduling
 """
 scheduler = BackgroundScheduler(timezone="US/Eastern")
-scheduler.add_job(func=job_update_db, trigger="interval", minutes=1)
+scheduler.add_job(func=background_job, trigger="interval", minutes=15)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 """
 
-#job_update_db()
 background_job()
 
+# Other stuff
 from app import routes

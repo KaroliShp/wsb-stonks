@@ -37,8 +37,10 @@ def fetch_posts(db_client, last_update = datetime.now() - timedelta(hours=0, min
         } for post in last_posts if datetime.utcfromtimestamp(post.created) > last_update ]
 
     # Add those posts to the DB
+    """
     if len(new_posts) > 0:
         db_client.create_many('posts', new_posts)
+    """
 
     print(f'Done fetching. Number of new posts: {len(new_posts)}')
 
