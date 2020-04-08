@@ -5,10 +5,12 @@ from app.mongo_client import MongoPostRepository
 import time
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime, timedelta
 
 from app.tasks.tasks import update_posts, get_posts, update_companies, get_companies, update_frequency_statistics
 from app.tasks.nlp_engine.analysis import tokenize_posts, tokenize_posts_mwe, lemmatize_words, get_stock_frequency
 from app.background_job.post_fetcher import fetch_posts
+from app.background_job.stock_frequency import calculate_stock_frequency
 
 # Handle application creation
 app = Flask(__name__)
@@ -26,7 +28,12 @@ def job_update_db():
     print('Job finished')
 
 def background_job():
-    fetch_posts(db_client)
+    """
+    last_update = datetime.now() - timedelta(hours=1, minutes=0)
+    fetch_posts(db_client, last_update)
+    calculate_stock_frequency(db_client, last_update)
+    """
+
 
 # Job scheduling
 """
