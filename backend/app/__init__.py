@@ -28,11 +28,16 @@ def job_update_db():
     print('Job finished')
 
 def background_job():
-    """
+    # Get the latest update
     last_update = datetime.now() - timedelta(hours=1, minutes=0)
-    fetch_posts(db_client, last_update)
-    calculate_stock_frequency(db_client, last_update)
-    """
+    
+    # Fetch new created posts since last update
+    new_posts = fetch_posts(db_client, last_update)
+
+    # Calculate stock frequency of the new posts
+    calculate_stock_frequency(new_posts)
+
+    # Update frequency tables
 
 
 # Job scheduling

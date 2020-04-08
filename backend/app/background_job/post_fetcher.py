@@ -12,7 +12,7 @@ POST_LIMIT = 200  # Assume that this is the upper limit of how many posts appear
 
 def fetch_posts(db_client, last_update = datetime.now() - timedelta(hours=0, minutes=30)):
     """ 
-    Fetch last 24 hrs posts from subreddit and store in the DB
+    Fetch the newest raw posts from subreddit given last update time
     :param db_client:
     :param last_update_hrs: hours between consecutive post fetches
     :param last_update_minutes: minutes between consecutive post fetches
@@ -28,7 +28,7 @@ def fetch_posts(db_client, last_update = datetime.now() - timedelta(hours=0, min
     last_posts = reddit_api.subreddit(SUBREDDIT_NAME).new(limit=POST_LIMIT)
     
     # Filter out only those posts that we have not already fetched
-    last_posts_filtered = [
+    new_posts = [
         { 
             'title' : post.title, 
             'score' : post.score, 
@@ -36,10 +36,10 @@ def fetch_posts(db_client, last_update = datetime.now() - timedelta(hours=0, min
             'created' : post.created 
         } for post in last_posts if datetime.utcfromtimestamp(post.created) > last_update ]
 
-    print(len(last_posts_filtered))
-
     # Add those posts to the DB
-    if len(last_posts_filtered) > 0:
-        db_client.create_many('posts', last_posts_filtered)
+    if len(new_posts) > 0:
+        db_client.create_many('posts', new_posts)
 
-    print(f'Done fetching. Number of new posts: {len(last_posts_filtered)}')
+    print(f'Done fetching. Number of new posts: {len(new_posts)}')
+
+    return new_posts
