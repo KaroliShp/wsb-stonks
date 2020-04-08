@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 # Top frequencies
 
 
-def get_stock_freq_top_all(db_client):
+def get_stock_freq_top(db_client):
     print(f'Start calculating stock frequency top')
 
     # Get raw frequency info from DB
@@ -16,13 +16,13 @@ def get_stock_freq_top_all(db_client):
     top_frequency = {}
     for data in raw_data:
         for key, value in data.items():
-            if key != 'date' and key in top_frequency:
+            if key != 'date' and key != '_id' and key in top_frequency:
                 top_frequency[key] += value
-            elif key != 'date':
+            elif key != 'date' and key != '_id':
                 top_frequency[key] = value
 
     # Convert dictionary to list of tuples
-    top_frequency_list = sorted([ (k, v) for k, v in top_frequency.iteritems() ], key=lambda x : x[1], reverse=True)
+    top_frequency_list = sorted([ { 'stock_name' : k, 'mentions' : v } for k, v in top_frequency.items() ], key=lambda x : x['mentions'], reverse=True)
 
     # Insert the information into DB
     db_client.delete_many('stock-frequency-top', {})
@@ -34,7 +34,7 @@ def get_stock_freq_top_all(db_client):
 # Historic frequency calculations per stock
 
 
-def get_stock_freq_historic_all(db_client, stock):
+def get_stock_freq_historic(db_client, stock):
     print(f'Start calculating stock frequency history')
 
     # Get raw frequency info from DB
@@ -52,6 +52,7 @@ def get_stock_freq_historic_all(db_client, stock):
     print('Finish calculating stock frequency history')
 
 
+"""
 def get_stock_freq_historic(db_client, stock_frequency, update_date):
     print(f'Start updating stock frequency history')
 
@@ -59,3 +60,4 @@ def get_stock_freq_historic(db_client, stock_frequency, update_date):
         db_client.update('stock-frequency-historic', { 'stock_name' : str(stock) }, { '$push' : { 'historic_frequency' : { 'date' : update_date, 'mentions' : mentions } } })
 
     print('Finish updating stock frequency history')
+"""
