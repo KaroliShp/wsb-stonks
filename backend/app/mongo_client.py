@@ -48,6 +48,9 @@ class MongoPostRepository(object):
             print(e)
 
 
-    
+    def update(self, collection, selector, item):
+        self.db[collection].replace_one(selector, item)
+
+
     def delete_many(self, collection, selector):
         self.db[collection].delete_many(selector)

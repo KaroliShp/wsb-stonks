@@ -2,26 +2,60 @@ import enum
 from datetime import datetime, timedelta
 
 
-def calculate_stock_frequency(db_client, last_update = datetime.now() - timedelta(hours=0, minutes=30)):
-    """
-    Calculate stock mentions given posts and store in DB
-    """
-    print(f'Start calculating stock frequency')
+# Top frequencies
 
-    # Get raw posts from DB
-    raw_posts = db_client.find_all('posts', {})
 
-    # Filter new posts based on the creation date
-    posts = list(filter(lambda x : datetime.utcfromtimestamp(x['created']) > last_update, raw_posts))
-    print(len(posts))
+def get_stock_freq_top_all(db_client):
+    print(f'Start calculating stock frequency top')
 
-    # Feed new posts into NLP engine to perform frequency calculations
-    stock_frequency = { 'SPY' : 10, 'LOL' : 2 }
+    # Get raw frequency info from DB
+    last_day = datetime.now() - timedelta(hours=24, minutes=0)
+    raw_data = db_client.find_all('posts-data', { 'date' : { "$gt" : last_day } })
+    
+    # Find frequencies of all mentioned stocks
+    top_frequency = {}
+    for data in raw_data:
+        for key, value in data.items():
+            if key != 'date' and key in top_frequency:
+                top_frequency[key] += value
+            elif key != 'date':
+                top_frequency[key] = value
 
-    # Add information to DB
-    db_client.create('stock-frequency', {
-        'date' : datetime.now(), 
-        'frequency' : stock_frequency 
+    # Convert dictionary to list of tuples
+    top_frequency_list = sorted([ (k, v) for k, v in top_frequency.iteritems() ], key=lambda x : x[1], reverse=True)
+
+    # Insert the information into DB
+    db_client.delete_many('stock-frequency-top', {})
+    db_client.create_many('stock-frequency-top', top_frequency_list)
+
+    print('Finish calculating stock frequency history')
+
+
+# Historic frequency calculations per stock
+
+
+def get_stock_freq_historic_all(db_client, stock):
+    print(f'Start calculating stock frequency history')
+
+    # Get raw frequency info from DB
+    raw_data = db_client.find_all('posts-data', { str(stock) : { "$exists" : True } })
+    
+    # Present data in a list of tuples where tuples mark some time period
+    historic_frequency = [ { 'date' : post['date'], 'mentions' : post[str(stock)] } for post in raw_data ]
+
+    # Update stock historic information on DB
+    db_client.create('stock-frequency-historic', {
+        'stock_name' : str(stock),
+        'historic_frequency' : historic_frequency
     })
 
-    print('Done calculating stock frequency')
+    print('Finish calculating stock frequency history')
+
+
+def get_stock_freq_historic(db_client, stock_frequency, update_date):
+    print(f'Start updating stock frequency history')
+
+    for stock, mentions in stock_frequency:
+        db_client.update('stock-frequency-historic', { 'stock_name' : str(stock) }, { '$push' : { 'historic_frequency' : { 'date' : update_date, 'mentions' : mentions } } })
+
+    print('Finish updating stock frequency history')
