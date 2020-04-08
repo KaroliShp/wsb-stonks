@@ -8,6 +8,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.tasks.tasks import update_posts, get_posts, update_companies, get_companies, update_frequency_statistics
 from app.tasks.nlp_engine.analysis import tokenize_posts, tokenize_posts_mwe, lemmatize_words, get_stock_frequency
+from app.background_job.post_fetcher import fetch_posts
 
 # Handle application creation
 app = Flask(__name__)
@@ -24,13 +25,18 @@ def job_update_db():
     update_frequency_statistics(db_client, get_posts(db_client), symbols, company_names)
     print('Job finished')
 
+def background_job():
+    fetch_posts(db_client)
+
 # Job scheduling
+"""
 scheduler = BackgroundScheduler(timezone="US/Eastern")
-scheduler.add_job(func=job_update_db, trigger="interval", minutes=30)
+scheduler.add_job(func=job_update_db, trigger="interval", minutes=1)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
-
+"""
 
 #job_update_db()
+background_job()
 
 from app import routes

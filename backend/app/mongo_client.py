@@ -1,6 +1,6 @@
 import os
 from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
+from pymongo.errors import ConnectionFailure, BulkWriteError
 
 
 class MongoPostRepository(object):
@@ -38,6 +38,15 @@ class MongoPostRepository(object):
 
     def create(self, collection, item):
         return self.db[collection].insert_one(item)
+    
+
+    def create_many(self, collection, items):
+        try:
+            self.db[collection].insert_many(items, ordered=False)
+        except BulkWriteError as e:
+            print('Error')
+            print(e)
+
 
     
     def delete_many(self, collection, selector):
