@@ -46,7 +46,8 @@ scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 """
 
-background_job()
+#background_job()
+#get_stock_freq_historic(db_client)
 
 # Other stuff
 from app import routes

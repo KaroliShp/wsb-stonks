@@ -1,9 +1,9 @@
 /* eslint-disable no-use-before-define */
-import React from 'react';
+import React, { useState, useEffect }  from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-export default function AutocompleteSearch() {
+export default function AutocompleteSearch(props) {
   const options = all_stocks.map(option => {
     const firstLetter = option.title[0].toUpperCase();
     return {
@@ -19,15 +19,12 @@ export default function AutocompleteSearch() {
       groupBy={option => option.firstLetter}
       getOptionLabel={option => option.title}
       style={{ width: 300 }}
+      onChange={props.onTagsChange}
       renderInput={params => <TextField {...params} label="Enter stock symbol" variant="outlined" />}
     />
   );
 }
 
 const all_stocks = [
-  { title: 'The Shawshank Redemption', year: 1994 },
-  { title: 'The Godfather', year: 1972 },
-  { title: 'The Godfather: Part II', year: 1974 },
-  { title: 'The Dark Knight', year: 2008 },
-  { title: '12 Angry Men', year: 1957 },
+  { title: 'SPY'},
 ];

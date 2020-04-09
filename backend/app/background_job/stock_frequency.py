@@ -40,9 +40,18 @@ def get_stock_freq_top(db_client):
 def get_stock_freq_historic(db_client):
     print(f'Start calculating stock frequency history')
 
+    # Get all info from DB
+    info_all = db_client.find_all('posts-data', {})
+
+    # Get all updates
+    all_updates = []
+    for info in info_all:
+        all_updates.append(info['date'].strftime("%H:%M"))
+
+    print(all_updates)
+
     # Get all mentioned stocks
     all_stocks = {}
-    info_all = db_client.find_all('posts-data', {})
     for info in info_all:
         for key, val in info.items():
             if key not in NON_STOCK_FIELDS and str(key).lower() in all_stocks:
@@ -50,14 +59,20 @@ def get_stock_freq_historic(db_client):
             elif key not in NON_STOCK_FIELDS:
                 all_stocks[str(key).lower()] = [ { 'time' : info['date'].strftime("%H:%M"), 'amount' : val } ]
 
+    # Insert 0 for where dates are not available
+    for stock, value in all_stocks.items():
+        updates = set([data['time'] for data in value])
+        for expected_update in all_updates:
+            if expected_update not in updates:
+                all_stocks[stock] += [ { 'time' : expected_update, 'amount' : 0  } ]
+
+    # Restructure data
     stocks = []
     for key, val in all_stocks.items():
         stocks.append({
             'stock_name' : key,
             'historic_data' : val
         })
-
-    print(stocks)
 
     db_client.delete_many('stock-frequency-historic', {})
     db_client.create_many('stock-frequency-historic', stocks)
