@@ -1,16 +1,17 @@
 def read_stocks():
-    stocks = []
+    stocks_set = set()
+    companies_set = set()
 
-    with open('data/companylist.csv', 'r') as f:
-        raw_data = f.readlines()
+    for company_list in ["companylist_amex.csv", "companylist_nasdaq.csv", "companylist_nyse.csv"]:
+        with open(f'data/{company_list}', 'r') as f:
+            raw_data = f.readlines()
 
-        for line in raw_data:
-            items = line.split(',')
-            symbol = items[0].strip()[1:-1]
-            security = items[1].strip()[1:-1]
-            stocks.append((symbol.lower(), security.lower()))
+            for line in raw_data:
+                items = line.split(',')
+                symbol = items[0].strip()[1:-1]
+                stocks_set.add(symbol.lower())
 
-    return stocks
+    return list(stocks_set), list(companies_set)
 
 
 def read_foribidden_words():

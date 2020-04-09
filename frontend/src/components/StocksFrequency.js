@@ -10,7 +10,7 @@ export default function StocksFrequency() {
   const [stocks, setStocks] = useState([]);
 
   useEffect(() => {
-    fetch('/api/stock/frequency').then(res => res.json()).then(data => {
+    fetch('/api/stock/frequency/top').then(res => res.json()).then(data => {
       setStocks(data);
     });
   }, []);
@@ -22,15 +22,13 @@ export default function StocksFrequency() {
         <TableHead>
           <TableRow>
             <TableCell>Symbol</TableCell>
-            <TableCell>Security</TableCell>
             <TableCell>Post Mentions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {stocks.map(stock => (
             <TableRow key={stock.id}>
-              <TableCell>{stock.symbol}</TableCell>
-              <TableCell>{stock.security}</TableCell>
+              <TableCell>{stock.stock_name}</TableCell>
               <TableCell>{stock.mentions}</TableCell>
             </TableRow>
           ))}

@@ -9,11 +9,12 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 import re
 from nltk import FreqDist
+from nltk.util import ngrams
 
 
 STOP_WORDS = set(stopwords.words('english'))
 FORIBIDDEN_WORDS = set(read_foribidden_words())
-STOCKS = read_stocks()
+STOCKS, COMPANIES = read_stocks()
 
 
 # Stocks NLP analysis
@@ -23,18 +24,17 @@ def get_stock_frequency(posts):
     cleaned_posts = tokenize_posts_stocks(posts)
 
     frequency = {}
-
-    symbols = list(map(lambda x : x[0], STOCKS))
-    security_names = list(map(lambda x : x[1], STOCKS))
     #company_names_underscores = [ name.replace(" ", "_") for name in company_names]
 
     for post in cleaned_posts:
+        #print(posts[cleaned_posts.index(post)])
         stocks_in_doc = set()
 
         # Find all mentioned stocks in a post
         for token in post:
-            if token in symbols:
+            if token in STOCKS:
                 stocks_in_doc.add(token.upper())
+                #print(token.upper())
         
         # Add 1 to frequency of mentioned stocks (mention once per post)
         for stock in stocks_in_doc:
@@ -77,14 +77,31 @@ def tokenize_posts_stocks(posts):
 # Top keyword NLP analysis
 
 
-def get_top_keywords(posts):
-    tokens = tokenize_posts_keywords(posts)
-    fdist = FreqDist(tokens)
-    top_keywords = fdist.most_common(10)
+def get_top_keywords(posts):    
+    # 1-gram
+    tokens_1 = tokenize_posts_keywords_1(posts)
+    fdist_1 = FreqDist(tokens_1)
+    top_keywords_1 = fdist_1.most_common(10)
+    
+    tokens_n = tokenize_posts_keywords_n(posts)
+
+    # 2-gram
+    bigrams = ngrams(tokens_n, 2)
+    fdist_2 = FreqDist(bigrams)
+    top_keywords_2 = fdist_2.most_common(10)
+    top_keywords_2 = [(f'{keywords[0]} {keywords[1]}', mentions) for keywords, mentions in top_keywords_2]
+
+    # 3-gram
+    trigrams = ngrams(tokens_n, 3)
+    fdist_3 = FreqDist(trigrams)
+    top_keywords_3 = fdist_3.most_common(10)
+    top_keywords_3 = [(f'{keywords[0]} {keywords[1]} {keywords[2]}', mentions) for keywords, mentions in top_keywords_3]
+
+    top_keywords = top_keywords_1 + top_keywords_2 + top_keywords_3
     return [{ 'keyword' : keyword, 'mentions' : mentions } for keyword, mentions in top_keywords]
 
 
-def tokenize_posts_keywords(posts):
+def tokenize_posts_keywords_1(posts):
     tokens_all = []
 
     for post in posts:
@@ -106,6 +123,39 @@ def tokenize_posts_keywords(posts):
 
         # Remove foribidden words
         tokens = list(filter(lambda x : x not in FORIBIDDEN_WORDS, tokens))
+
+        # Lemmatize tokens
+        tokens = list(map(lambda x : WordNetLemmatizer().lemmatize(x, 'v'), tokens))
+
+        tokens_all += tokens
+
+    return tokens_all
+
+
+def tokenize_posts_keywords_n(posts):
+    tokens_all = []
+
+    for post in posts:
+        # Remove punctuation
+        post['title'] = re.sub('[^a-zA-Z]', ' ', post['title'])
+        post['selftext'] = re.sub('[^a-zA-Z]', ' ', post['selftext'])
+
+        # Remove special characters and digits
+        post['title'] = re.sub("(\\d|\\W)+", " ", post['title'])
+        post['selftext'] = re.sub("(\\d|\\W)+", " ", post['selftext'])
+        
+        # Tokenize the input
+        tknzr = TweetTokenizer()
+        tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
+
+        # Remove tokens that are of length less than 2 or longer than 12
+        tokens = list(filter(lambda x : len(x) >= 2 and len(x) < 12, tokens))
+
+        # Lower all tokens
+        tokens = list(map(lambda x : x.lower() , tokens))
+
+        # Remove stopwords
+        tokens = list(filter(lambda x : x not in STOP_WORDS, tokens))
 
         # Lemmatize tokens
         tokens = list(map(lambda x : WordNetLemmatizer().lemmatize(x, 'v'), tokens))

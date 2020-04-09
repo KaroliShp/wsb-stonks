@@ -19,6 +19,7 @@ def process_posts(db_client, posts, update_date):
     posts_processed = {**posts_processed, **top_keywords}
 
     # Add information to DB
+    db_client.delete_many('posts-data', {})
     db_client.create('posts-data', posts_processed)
 
     print('Done with processing posts')

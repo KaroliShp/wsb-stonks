@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from app.background_job.post_fetcher import fetch_posts
 from app.background_job.post_processor import process_posts
 from app.background_job.stock_frequency import get_stock_freq_historic, get_stock_freq_top
+from app.background_job.keyword_top import get_keywords_top
 
 
 # Handle application creation
@@ -20,7 +21,7 @@ db_client = MongoPostRepository('wsb-stonks')
 # Job scheduling
 def background_job():
     # Get the latest update
-    last_update = datetime.now() - timedelta(hours=1, minutes=0)
+    last_update = datetime.now() - timedelta(hours=24, minutes=0)
     update_date = datetime.now()
     
     # Fetch new created posts since last update
@@ -34,6 +35,9 @@ def background_job():
 
     # Calculate stock frequency of all posts historically
     # get_stock_freq_historic(db_client)
+
+    # Get the new keyword top
+    get_keywords_top(db_client)
 
 """
 scheduler = BackgroundScheduler(timezone="US/Eastern")
