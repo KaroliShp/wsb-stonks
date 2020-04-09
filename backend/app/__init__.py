@@ -1,8 +1,6 @@
 from flask import Flask
 from config import Config
 from app.mongo_client import MongoPostRepository
-
-import time
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
@@ -10,6 +8,7 @@ from datetime import datetime, timedelta
 from app.background_job.post_fetcher import fetch_posts
 from app.background_job.post_processor import process_posts
 from app.background_job.stock_frequency import get_stock_freq_historic, get_stock_freq_top
+
 
 # Handle application creation
 app = Flask(__name__)
@@ -30,12 +29,11 @@ def background_job():
     # Process post information and store in DB
     process_posts(db_client, new_posts, update_date)
 
-    # Calculate stock frequency of all posts historically
-    for stock in ['SPY', 'LOL']:
-        get_stock_freq_historic(db_client, stock)
-
     # Calculate most frequent stocks from all posts historically
     get_stock_freq_top(db_client)
+
+    # Calculate stock frequency of all posts historically
+    # get_stock_freq_historic(db_client)
 
 """
 scheduler = BackgroundScheduler(timezone="US/Eastern")

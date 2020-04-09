@@ -1,34 +1,42 @@
+from nlp_engine.data_io import read_stocks, read_foribidden_words
+
 import nltk
 nltk.data.path.append('./nltk_data/')
 from nltk.corpus import stopwords
-from app.tasks.nlp_engine.io import read_from_file
 from nltk.tokenize import TweetTokenizer
 from nltk.tokenize import MWETokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 import re
+from nltk import FreqDist
 
 
 STOP_WORDS = set(stopwords.words('english'))
+FORIBIDDEN_WORDS = set(read_foribidden_words())
+STOCKS = read_stocks()
 
 
-def get_stock_frequency(cleaned_posts, symbols, company_names):
+# Stocks NLP analysis
+
+
+def get_stock_frequency(posts):
+    cleaned_posts = tokenize_posts_stocks(posts)
+
     frequency = {}
 
-    symbols_lowered = [ symbol.lower() for symbol in symbols ]
-    company_names_underscores = [ name.replace(" ", "_") for name in company_names]
+    symbols = list(map(lambda x : x[0], STOCKS))
+    security_names = list(map(lambda x : x[1], STOCKS))
+    #company_names_underscores = [ name.replace(" ", "_") for name in company_names]
 
     for post in cleaned_posts:
         stocks_in_doc = set()
 
         # Find all mentioned stocks in a post
         for token in post:
-            if token in symbols_lowered:
+            if token in symbols:
                 stocks_in_doc.add(token.upper())
-            elif token in company_names_underscores:
-                stocks_in_doc.add(symbols[company_names_underscores.index(token)].upper())
-
-        # Add 1 to frequency of mentioned stocks
+        
+        # Add 1 to frequency of mentioned stocks (mention once per post)
         for stock in stocks_in_doc:
             if stock in frequency:
                 frequency[stock] += 1
@@ -38,22 +46,19 @@ def get_stock_frequency(cleaned_posts, symbols, company_names):
     return {k: v for k, v in sorted(frequency.items(), key=lambda item: item[1], reverse=True)}
 
 
-def tokenize_posts(posts):
-    """
-    Tokenize and clean input
-    """
+def tokenize_posts_stocks(posts):
     cleaned_posts = []
 
     for post in posts:
         # Tokenize the input
         tknzr = TweetTokenizer()
-        tokens = tknzr.tokenize(post[0]) + tknzr.tokenize(post[2])
+        tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
 
         # Lower all tokens
         tokens = list(map(lambda x : x.lower() , tokens))
 
-        # Remove tokens that are of length less than 3 or longer than 15
-        tokens = list(filter(lambda x : len(x) >= 3 and len(x) < 15, tokens))
+        # Remove tokens that are of length less than 3 or longer than 6
+        tokens = list(filter(lambda x : len(x) >= 3 and len(x) < 6, tokens))
 
         # Remove numbers
         tokens = list(filter(lambda x : not is_num(x), tokens))
@@ -61,15 +66,57 @@ def tokenize_posts(posts):
         # Remove stopwords
         tokens = list(filter(lambda x : x not in STOP_WORDS, tokens))
 
+        # Remove foribidden words
+        tokens = list(filter(lambda x : x not in FORIBIDDEN_WORDS, tokens))
+
         cleaned_posts.append(tokens)
 
     return cleaned_posts
 
 
+# Top keyword NLP analysis
+
+
+def get_top_keywords(posts):
+    tokens = tokenize_posts_keywords(posts)
+    fdist = FreqDist(tokens)
+    top_keywords = fdist.most_common(10)
+    return [{ 'keyword' : keyword, 'mentions' : mentions } for keyword, mentions in top_keywords]
+
+
+def tokenize_posts_keywords(posts):
+    tokens_all = []
+
+    for post in posts:
+        # Tokenize the input
+        tknzr = TweetTokenizer()
+        tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
+
+        # Lower all tokens
+        tokens = list(map(lambda x : x.lower() , tokens))
+
+        # Remove tokens that are of length less than 3 or longer than 12
+        tokens = list(filter(lambda x : len(x) >= 3 and len(x) < 12, tokens))
+
+        # Remove numbers
+        tokens = list(filter(lambda x : not is_num(x), tokens))
+
+        # Remove stopwords
+        tokens = list(filter(lambda x : x not in STOP_WORDS, tokens))
+
+        # Remove foribidden words
+        tokens = list(filter(lambda x : x not in FORIBIDDEN_WORDS, tokens))
+
+        # Lemmatize tokens
+        tokens = list(map(lambda x : WordNetLemmatizer().lemmatize(x, 'v'), tokens))
+
+        tokens_all += tokens
+
+    return tokens_all
+
+
+"""
 def tokenize_posts_mwe(cleaned_posts, company_names):
-    """
-    Merge custom tokens together
-    """
     cleaned_posts_mwe = []
     
     tokenizer = MWETokenizer()
@@ -84,8 +131,9 @@ def tokenize_posts_mwe(cleaned_posts, company_names):
         cleaned_posts_mwe.append(tokenizer.tokenize(tokens))
     
     return cleaned_posts_mwe
+"""
 
-
+"""
 def lemmatize_words(cleaned_posts):
     lemmatized_posts = []
 
@@ -93,7 +141,7 @@ def lemmatize_words(cleaned_posts):
         lemmatized_posts.append([ WordNetLemmatizer().lemmatize(x, 'v') for x in post ])
 
     return lemmatized_posts
-
+"""
 
 """
 def tag_pos_posts(cleaned_posts):
@@ -106,7 +154,7 @@ def tag_pos_posts(cleaned_posts):
     return tags
 """
 
-# Helper method
+# Helper methods
 
 def is_num(string):
     try:
@@ -119,3 +167,7 @@ def is_num(string):
         return True
     except ValueError:
         return False
+
+
+def get_stocks():
+    return STOCKS

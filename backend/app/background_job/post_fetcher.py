@@ -6,7 +6,7 @@ import praw
 CLIENT_ID = 'randomRedditClientId'
 CLIENT_SECRET = 'redditRandomClientSecret'
 USER_AGENT = 'wsb-stonks'
-SUBREDDIT_NAME = 'options'
+SUBREDDIT_NAME = 'wallstreetbets'
 POST_LIMIT = 200  # Assume that this is the upper limit of how many posts appear per update interval
 
 
