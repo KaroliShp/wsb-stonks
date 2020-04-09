@@ -1,8 +1,6 @@
 import enum
 from datetime import datetime, timedelta
 
-from nlp_engine.analysis import get_stocks
-
 
 NON_STOCK_FIELDS = ['date', '_id', 'top_keywords']
 
@@ -42,22 +40,27 @@ def get_stock_freq_top(db_client):
 def get_stock_freq_historic(db_client):
     print(f'Start calculating stock frequency history')
 
-    # Get all stocks
-    stocks = get_stocks()
+    # Get all mentioned stocks
+    all_stocks = {}
+    info_all = db_client.find_all('posts-data', {})
+    for info in info_all:
+        for key, val in info.items():
+            if key not in NON_STOCK_FIELDS and str(key).lower() in all_stocks:
+                all_stocks[str(key).lower()] += [ { 'time' : info['date'].strftime("%H:%M"), 'amount' : val } ]
+            elif key not in NON_STOCK_FIELDS:
+                all_stocks[str(key).lower()] = [ { 'time' : info['date'].strftime("%H:%M"), 'amount' : val } ]
 
-    for stock, _ in stocks:
-        # Get raw frequency info from DB
-        raw_data = db_client.find_all('posts-data', { str(stock) : { "$exists" : True } })
-        
-        # If such stock has been mentioned
-        if len(raw_data) > 0:
-            historic_frequency = [ { 'date' : post['date'], 'mentions' : post[str(stock)] } for post in raw_data ]
+    stocks = []
+    for key, val in all_stocks.items():
+        stocks.append({
+            'stock_name' : key,
+            'historic_data' : val
+        })
 
-            # Update stock historic information on DB
-            db_client.create('stock-frequency-historic', {
-                'stock_name' : str(stock),
-                'historic_frequency' : historic_frequency
-            })
+    print(stocks)
+
+    db_client.delete_many('stock-frequency-historic', {})
+    db_client.create_many('stock-frequency-historic', stocks)
 
     print('Finish calculating stock frequency history')
 

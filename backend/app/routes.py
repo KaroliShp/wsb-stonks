@@ -8,13 +8,21 @@ def home():
 
 
 @app.route('/api/stock/frequency/top', methods=['GET'])
-def stock_frequency():
+def stock_frequency_top():
     """
-    Display current stock frequency from database
+    Display current stock frequency from database (top)
     """
     stock_frequency = db_client.find_all('stock-frequency-top', {})
-    print(stock_frequency)
     return jsonify(stock_frequency[:10])
+
+
+@app.route('/api/stock/frequency/historic/<string:stock_name>', methods=['GET'])
+def stock_frequency_historic(stock_name):
+    """
+    Display current stock frequency from database (historic)
+    """
+    stock_frequency = db_client.find_all('stock-frequency-historic', { 'stock_name' : stock_name })[0]['historic_data']
+    return jsonify(stock_frequency)
 
 
 @app.route('/api/keyword/top', methods=['GET'])
