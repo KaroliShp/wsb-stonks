@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect }  from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Title from './Title';
@@ -8,7 +8,7 @@ function createData(time, amount) {
   return { time, amount };
 }
 
-const data = [
+const old_data = [
   createData('00:00', 0),
   createData('03:00', 300),
   createData('06:00', 600),
@@ -23,6 +23,16 @@ const data = [
 export default function StocksChart() {
   const theme = useTheme();
 
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/stock/frequency/historic/spy').then(res => res.json()).then(data => {
+      console.log(data)
+      console.log(old_data)
+      setChartData(data);
+    });
+  }, []);
+
   return (
     <React.Fragment>
       <Title>
@@ -30,7 +40,7 @@ export default function StocksChart() {
       </Title>
       <ResponsiveContainer>
         <LineChart
-          data={data}
+          data={chartData}
           margin={{
             top: 30,
             right: 30,

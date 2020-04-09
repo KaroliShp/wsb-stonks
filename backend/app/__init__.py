@@ -34,7 +34,7 @@ def background_job():
     get_stock_freq_top(db_client)
 
     # Calculate stock frequency of all posts historically
-    # get_stock_freq_historic(db_client)
+    get_stock_freq_historic(db_client)
 
     # Get the new keyword top
     get_keywords_top(db_client)
