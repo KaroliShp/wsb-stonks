@@ -1,5 +1,6 @@
 from flask import jsonify
 from app import app, db_client
+from datetime import datetime, timedelta
 
 
 @app.route('/api/', methods=['GET'])
@@ -22,7 +23,7 @@ def stock_frequency_historic(stock_name):
     Display current stock frequency from database (historic)
     """
     stock_frequency = db_client.find_all('stock-frequency-historic', { 'stock_name' : stock_name })[0]['historic_data']
-    return jsonify(stock_frequency)
+    return jsonify(sorted(stock_frequency, key=lambda x : datetime.strptime(x['time'], '%H:%M')))
 
 
 @app.route('/api/keyword/top', methods=['GET'])
