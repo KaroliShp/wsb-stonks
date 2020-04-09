@@ -46,10 +46,6 @@ Updated on every update cycle and stores processed informaton from each new post
 * Stock mentions and their frequency
 * Keywords
 
-### Collection companies
-
--
-
 ### Collection stock-frequency-historic
 
 Contains data for each stock and its historic frequency

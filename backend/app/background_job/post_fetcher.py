@@ -6,7 +6,7 @@ import praw
 CLIENT_ID = '2ocFsBoC1x3Ikw'
 CLIENT_SECRET = 'j2CbxQJb53NFdqANAM60p1xCbt4'
 USER_AGENT = 'wsb-stonks'
-SUBREDDIT_NAME = 'options'
+SUBREDDIT_NAME = 'wallstreetbets'
 POST_LIMIT = 200  # Assume that this is the upper limit of how many posts appear per update interval
 
 
