@@ -20,9 +20,6 @@ def get_emoji_top(db_client):
     # Convert dictionary to list of tuples
     top_emoji_list = sorted([ { 'emoji' : k, 'mentions' : v } for k, v in top_emoji.items() ], key=lambda x : x['mentions'], reverse=True)
 
-    # Insert the information into DB
-    db_client.delete_many('emoji-top', {})
-    if len(top_emoji_list) > 0:
-        db_client.create_many('emoji-top', top_emoji_list)
-
     print('Finish calculating top emoji')
+
+    return top_emoji_list

@@ -33,7 +33,7 @@ export default function Emojis() {
 
   return (
     <React.Fragment>
-      <Title>Top 🅱️emojis</Title>
+      <Title>Top 🅱️emoji</Title>
       { loading
         ?
         <div className={classes.spinner}>

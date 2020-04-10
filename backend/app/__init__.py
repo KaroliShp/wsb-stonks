@@ -32,27 +32,49 @@ def background_job():
     new_posts_by_date, new_comments_by_date = fetch_posts(db_client, update_date, num_of_updates, limit)
 
     # Calculate statistics
-    calculate_statistics(db_client, new_posts_by_date, new_comments_by_date, update_date)
+    db_statistics = calculate_statistics(db_client, new_posts_by_date, new_comments_by_date, update_date)
 
-    # Process post information and store in DB
-    db_client.delete_many('posts-data', {})
+    # Process post information
+    db_posts_processed_all = []
     for date, new_posts in new_posts_by_date.items():
-        process_posts(db_client, new_posts, date, new_comments_by_date[date])
+        db_posts_processed_all.append(process_posts(db_client, new_posts, date, new_comments_by_date[date]))
 
     # Calculate most frequent stocks from all posts historically
-    get_stock_freq_top(db_client)
+    db_top_frequency_list = get_stock_freq_top(db_client)
 
     # Calculate stock frequency of all posts historically
-    get_stock_freq_historic(db_client)
+    db_stocks = get_stock_freq_historic(db_client)
 
     # Get the new keyword top
+    # TODO fix this
     get_keywords_top(db_client)
 
     # Get top emoji
-    get_emoji_top(db_client)
+    db_top_emoji_list = get_emoji_top(db_client)
 
     # Get all mentioned stocks
-    get_all_stocks(db_client)
+    db_all_stocks = get_all_stocks(db_client)
+
+    # Write everything to DB at once
+    db_client.delete_many('statistics', {})
+    db_client.create('statistics', db_statistics)
+
+    db_client.delete_many('posts-data', {})
+    for db_posts_processed in db_posts_processed_all:
+        db_client.create('posts-data', db_posts_processed)
+
+    db_client.delete_many('stock-frequency-top', {})
+    db_client.create_many('stock-frequency-top', db_top_frequency_list)
+    
+    db_client.delete_many('stock-frequency-historic', {})
+    db_client.create_many('stock-frequency-historic', db_stocks)
+
+    db_client.delete_many('emoji-top', {})
+    if len(db_top_emoji_list) > 0:
+        db_client.create_many('emoji-top', db_top_emoji_list)
+
+    db_client.delete_many('stock-list', {})
+    db_client.create_many('stock-list', db_all_stocks)
 
 
 """

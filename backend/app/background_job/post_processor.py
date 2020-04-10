@@ -23,9 +23,6 @@ def process_posts(db_client, posts, update_date, comments):
     top_emoji = { 'top_emoji' : get_top_emoji(deepcopy(posts) + deepcopy(comments)) }
     posts_processed = { **posts_processed, **top_emoji }
 
-    # Add information to DB
-    db_client.create('posts-data', posts_processed)
-
     print('Done with processing posts')
 
-    return stock_frequencies
+    return posts_processed

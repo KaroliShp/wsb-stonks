@@ -27,11 +27,9 @@ def get_stock_freq_top(db_client):
     # Convert dictionary to list of tuples
     top_frequency_list = sorted([ { 'stock_name' : k, 'mentions' : v } for k, v in top_frequency.items() ], key=lambda x : x['mentions'], reverse=True)
 
-    # Insert the information into DB
-    db_client.delete_many('stock-frequency-top', {})
-    db_client.create_many('stock-frequency-top', top_frequency_list)
-
     print('Finish calculating stock frequency top')
+
+    return top_frequency_list
 
 
 # Historic frequency calculations
@@ -75,10 +73,9 @@ def get_stock_freq_historic(db_client):
             'historic_data' : historic_data
         })
 
-    db_client.delete_many('stock-frequency-historic', {})
-    db_client.create_many('stock-frequency-historic', stocks)
-
     print('Finish calculating stock frequency history')
+
+    return stocks
 
 
 """
