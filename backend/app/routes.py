@@ -27,6 +27,15 @@ def stock_frequency_historic(stock_name):
     return jsonify(stock_frequency)
 
 
+@app.route('/api/stock/list', methods=['GET'])
+def stock_list():
+    """
+    Display all stocks
+    """
+    stocks = db_client.find_all('stock-list', {})
+    return jsonify(stocks)
+
+
 @app.route('/api/keyword/top', methods=['GET'])
 def keyword_top():
     """
