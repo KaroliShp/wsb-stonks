@@ -1,4 +1,3 @@
-import enum
 from datetime import datetime, timedelta
 
 
@@ -25,4 +24,4 @@ def get_keywords_top(db_client):
     db_client.delete_many('keywords-top', {})
     db_client.create_many('keywords-top', top_keywords_list)
 
-    print('Finish calculating stock frequency top')
+    print('Finish calculating top keywords')

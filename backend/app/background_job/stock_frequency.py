@@ -2,7 +2,7 @@ import enum
 from datetime import datetime, timedelta
 
 
-NON_STOCK_FIELDS = ['date', '_id', 'top_keywords']
+NON_STOCK_FIELDS = ['date', '_id', 'top_keywords', 'top_emoji']
 
 
 # Top frequencies

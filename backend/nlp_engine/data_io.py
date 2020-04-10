@@ -3,7 +3,7 @@ def read_stocks():
     companies_set = set()
 
     for company_list in ["companylist_amex.csv", "companylist_nasdaq.csv", "companylist_nyse.csv"]:
-        with open(f'data/{company_list}', 'r') as f:
+        with open(f'nlp_engine/data/{company_list}', 'r') as f:
             raw_data = f.readlines()
 
             for line in raw_data:
@@ -17,7 +17,7 @@ def read_stocks():
 def read_foribidden_words():
     words = []
 
-    with open('data/forbidden_words.txt', 'r') as f:
+    with open('nlp_engine/data/forbidden_words.txt', 'r') as f:
         raw_words = f.readlines()
 
         for line in raw_words:
