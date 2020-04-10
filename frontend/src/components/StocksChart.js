@@ -44,18 +44,13 @@ export default function StocksChart() {
 
   return (
     <React.Fragment>
-      <Title>
-          Time vs. Mentions of Stock
-      </Title>
       <AutocompleteSearch onTagsChange={onTagsChange} />
       <ResponsiveContainer>
         <LineChart
           data={chartData}
           margin={{
             top: 30,
-            right: 30,
-            bottom: 50,
-            left: 30,
+            bottom: 30,
           }}
         >
           <CartesianGrid stroke="#f5f5f5"/>

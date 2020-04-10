@@ -5,35 +5,58 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
+import Spinner from './Spinner';
+import { makeStyles } from '@material-ui/core/styles';
+
+
+const useStyles = makeStyles(theme => ({
+  spinner: {
+      textAlign: 'center',
+      fontSize: "2.2em",
+      margin: 'auto'
+  },
+}));
+
 
 export default function Emojis() {
   const [emojis, setEmojis] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/emoji/top').then(res => res.json()).then(data => {
       setEmojis(data);
+      setLoading(false);
     });
   }, []);
+
+  const classes = useStyles();
 
   return (
     <React.Fragment>
       <Title>Top 🅱️emojis</Title>
-      <Table size="big">
+      { loading
+        ?
+        <div className={classes.spinner}>
+          <Spinner />
+        </div>
+        :
+        <Table size="big">
         <TableHead>
           <TableRow>
-            <TableCell>Emoji</TableCell>
-            <TableCell>Mentions</TableCell>
+            <TableCell align='center'>Emoji</TableCell>
+            <TableCell align='center'>Mentions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {emojis.map(emoji => (
             <TableRow key={emoji.id}>
-              <TableCell>{emoji.emoji}</TableCell>
-              <TableCell>{emoji.mentions}</TableCell>
+              <TableCell align='center'>{emoji.emoji}</TableCell>
+              <TableCell align='center'>{emoji.mentions}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      }
     </React.Fragment>
   );
 }
