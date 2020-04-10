@@ -20,9 +20,6 @@ export default function Statistics() {
     return (
         <div>
             <Typography variant="h6" align="center">
-                Last update: { statistics.last_update }
-            </Typography>
-            <Typography variant="h6" align="center">
                 Past 24 hours:
             </Typography>
             <Typography variant="h6" align="center">
@@ -33,6 +30,9 @@ export default function Statistics() {
             </Typography>
             <Typography variant="h6" align="center">
                 🏆 { statistics.top_author.user_name } is the most activate poster with { statistics.top_author.posts } posts
+            </Typography>
+            <Typography variant="h6" align="center">
+                ⏰ Last update: { statistics.last_update }
             </Typography>
         </div>
     );

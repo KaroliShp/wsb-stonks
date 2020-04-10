@@ -4,8 +4,17 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 export default function AutocompleteSearch(props) {
-  const options = all_stocks.map(option => {
-    const firstLetter = option.title[0].toUpperCase();
+  
+  const [stocks, setStocks] = useState([{ 'stock_name' : 'NaN' }]);
+
+  useEffect(() => {
+    fetch('/api/stock/list').then(res => res.json()).then(data => {
+      setStocks(data);
+    });
+  }, []);
+  
+  const options = stocks.map(option => {
+    const firstLetter = option.stock_name[0].toUpperCase();
     return {
       firstLetter: /[0-9]/.test(firstLetter) ? '0-9' : firstLetter,
       ...option,
@@ -17,14 +26,10 @@ export default function AutocompleteSearch(props) {
       id="grouped-demo"
       options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
       groupBy={option => option.firstLetter}
-      getOptionLabel={option => option.title}
+      getOptionLabel={option => option.stock_name}
       style={{ width: 300 }}
       onChange={props.onTagsChange}
       renderInput={params => <TextField {...params} label="Enter stock symbol" variant="outlined" />}
     />
   );
 }
-
-const all_stocks = [
-  { title: 'SPY'},
-];

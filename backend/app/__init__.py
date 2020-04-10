@@ -11,6 +11,8 @@ from app.background_job.stock_frequency import get_stock_freq_historic, get_stoc
 from app.background_job.keyword_top import get_keywords_top
 from app.background_job.emoji_top import get_emoji_top
 from app.background_job.statistics_calculator import calculate_statistics
+from app.background_job.stock_list import get_all_stocks
+
 
 # Handle application creation
 app = Flask(__name__)
@@ -51,6 +53,9 @@ def background_job():
     # Get top emoji
     get_emoji_top(db_client)
 
+    # Get all mentioned stocks
+    get_all_stocks(db_client)
+
 
 """
 scheduler = BackgroundScheduler(timezone="US/Eastern")
@@ -60,6 +65,7 @@ atexit.register(lambda: scheduler.shutdown())
 """
 
 #background_job()
+get_all_stocks(db_client)
 
 # Other stuff
 from app import routes
