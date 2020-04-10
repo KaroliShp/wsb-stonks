@@ -34,8 +34,19 @@ def fetch_posts(db_client, update_date, num_of_updates, limit):
             'title' : post.title, 
             'score' : post.score, 
             'selftext' : post.selftext, 
-            'created' : datetime.utcfromtimestamp(post.created).replace(microsecond=0)
+            'created' : datetime.utcfromtimestamp(post.created).replace(microsecond=0),
+            'num_comments' : post.num_comments,
+            'comments' : post,
+            'author' : post.author.name
         } for post in last_posts if datetime.utcfromtimestamp(post.created) > last_update ]
+
+    # Extend comments and append properly to the post information
+    for post in new_posts:
+        post['comments'].comments.replace_more(limit=0)
+        all_comments = []
+        for comment in  post['comments'].comments.list():
+            all_comments.append(comment.body)
+        post['comments'] = all_comments
 
     # Get all update dates for the number of updates inputed
     new_posts_by_date = {}
