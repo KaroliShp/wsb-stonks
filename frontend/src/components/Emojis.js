@@ -6,12 +6,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 
-export default function Keywords() {
-  const [keywords, setKeywords] = useState([]);
+export default function Emojis() {
+  const [emojis, setEmojis] = useState([]);
 
   useEffect(() => {
-    fetch('/api/keyword/top').then(res => res.json()).then(data => {
-      setKeywords(data);
+    fetch('/api/emoji/top').then(res => res.json()).then(data => {
+      setEmojis(data);
     });
   }, []);
 
@@ -21,15 +21,15 @@ export default function Keywords() {
       <Table size="big">
         <TableHead>
           <TableRow>
-            <TableCell>Keywords</TableCell>
+            <TableCell>Emoji</TableCell>
             <TableCell>Mentions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {keywords.map(keyword => (
-            <TableRow key={keyword.id}>
-              <TableCell>{keyword.keyword}</TableCell>
-              <TableCell>{keyword.mentions}</TableCell>
+          {emojis.map(emoji => (
+            <TableRow key={emoji.id}>
+              <TableCell>{emoji.emoji}</TableCell>
+              <TableCell>{emoji.mentions}</TableCell>
             </TableRow>
           ))}
         </TableBody>

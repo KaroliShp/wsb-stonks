@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import math
 
 import praw
 
@@ -7,17 +8,17 @@ CLIENT_ID = 'randomRedditClientId'
 CLIENT_SECRET = 'redditRandomClientSecret'
 USER_AGENT = 'wsb-stonks'
 SUBREDDIT_NAME = 'wallstreetbets'
-POST_LIMIT = 200  # Assume that this is the upper limit of how many posts appear per update interval
 
 
-def fetch_posts(db_client, last_update = datetime.now() - timedelta(hours=0, minutes=30)):
+def fetch_posts(db_client, update_date, num_of_updates, limit):
     """ 
     Fetch the newest raw posts from subreddit given last update time
     :param db_client:
-    :param last_update_hrs: hours between consecutive post fetches
-    :param last_update_minutes: minutes between consecutive post fetches
     """
-    print(f'Start fetching, last update: {last_update.strftime("%Y-%m-%d %H:%M:%S")}')
+    # Calculate last update time
+    last_update = update_date - timedelta(hours=num_of_updates)
+
+    print(f'Start fetching, current update: {update_date.strftime("%Y-%m-%d %H:%M:%S")}; last update: {last_update.strftime("%Y-%m-%d %H:%M:%S")}')
 
     # Authenticate with reddit API
     reddit_api = praw.Reddit(client_id=CLIENT_ID,
@@ -25,23 +26,27 @@ def fetch_posts(db_client, last_update = datetime.now() - timedelta(hours=0, min
                              user_agent=USER_AGENT)
 
     # Get the last posts that may contain duplicate posts
-    last_posts = reddit_api.subreddit(SUBREDDIT_NAME).new(limit=POST_LIMIT)
+    last_posts = reddit_api.subreddit(SUBREDDIT_NAME).new(limit=limit)
     
-    # Filter out only those posts that we have not already fetched
+    # Filter out only those posts that only belong to our earliest update date
     new_posts = [
         { 
             'title' : post.title, 
             'score' : post.score, 
             'selftext' : post.selftext, 
-            'created' : post.created 
+            'created' : datetime.utcfromtimestamp(post.created).replace(microsecond=0)
         } for post in last_posts if datetime.utcfromtimestamp(post.created) > last_update ]
 
-    # Add those posts to the DB
-    """
-    if len(new_posts) > 0:
-        db_client.create_many('posts', new_posts)
-    """
+    # Get all update dates for the number of updates inputed
+    new_posts_by_date = {}
+    for i in range(0, num_of_updates):
+        new_posts_by_date[update_date - timedelta(hours=i)] = []
+
+    # Group posts into batches based on their creation date
+    for post in new_posts:
+        update_diff = math.floor(((update_date - post['created']).total_seconds() / 3600))
+        new_posts_by_date[update_date - timedelta(hours=update_diff)].append(post)
 
     print(f'Done fetching. Number of new posts: {len(new_posts)}')
 
-    return new_posts
+    return new_posts_by_date

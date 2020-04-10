@@ -33,3 +33,12 @@ def keyword_top():
     """
     top_keywords = db_client.find_all('keywords-top', {})
     return jsonify(top_keywords[:10])
+
+
+@app.route('/api/emoji/top', methods=['GET'])
+def emoji_top():
+    """
+    Display top emojis
+    """
+    top_emoji = db_client.find_all('emoji-top', {})
+    return jsonify(top_emoji[:10])

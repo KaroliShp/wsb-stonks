@@ -11,7 +11,7 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Keywords from './components/Keywords';
 import StocksChart from './components/StocksChart';
-import AutocompleteSearch from './components/AutocompleteSearch';
+import Emojis from './components/Emojis';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -61,15 +61,21 @@ export default function App() {
               </Paper>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <Paper className={classes.paper}>
                 <Keywords />
               </Paper>
             </Grid>
 
-            <Grid className={classes.grid} item xs={12} md={6}>
+            <Grid className={classes.grid} item xs={12} md={4}>
               <Paper className={classes.paper}>
                 <StocksFrequency />
+              </Paper>
+            </Grid>
+
+            <Grid className={classes.grid} item xs={12} md={4}>
+              <Paper className={classes.paper}>
+                <Emojis />
               </Paper>
             </Grid>
 

@@ -10,6 +10,8 @@ from nltk.corpus import wordnet
 import re
 from nltk import FreqDist
 from nltk.util import ngrams
+import emoji
+import regex
 
 
 STOP_WORDS = set(stopwords.words('english'))
@@ -163,6 +165,35 @@ def tokenize_posts_keywords_n(posts):
         tokens_all += tokens
 
     return tokens_all
+
+
+# Emoji analysis
+
+
+def get_top_emoji(posts):
+    all_emoji = {}
+    
+    for post in posts:
+        # Get text where we will look for emojis
+        text = post['title'] + '. ' + post['selftext']
+
+        # Find emojis
+        data = regex.findall(r'\X', text)
+        #flags = regex.findall(u'[\U0001F1E6-\U0001F1FF]', text) 
+        for word in data:
+            if any(char in emoji.UNICODE_EMOJI for char in word):
+                if word in all_emoji:
+                    all_emoji[word] += 1
+                else:
+                    all_emoji[word] = 1
+    
+    # Convert structure
+    all_emoji_list = []
+    for e, m in all_emoji.items():
+        all_emoji_list.append({ 'emoji' : e, 'mentions' : m })
+
+    return all_emoji_list
+
 
 
 """
