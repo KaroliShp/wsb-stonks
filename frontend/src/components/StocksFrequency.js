@@ -17,7 +17,7 @@ export default function StocksFrequency() {
 
   return (
     <React.Fragment>
-      <Title>Most Popular Stocks</Title>
+      <Title>Most Popular Stonks</Title>
       <Table size="big">
         <TableHead>
           <TableRow>

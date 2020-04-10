@@ -55,6 +55,8 @@ def tokenize_posts_stocks(posts):
         # Tokenize the input
         tknzr = TweetTokenizer()
         tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
+        for comment in post['comments']:
+            tokens += tknzr.tokenize(comment)
 
         # Lower all tokens
         tokens = list(map(lambda x : x.lower() , tokens))
@@ -83,20 +85,20 @@ def get_top_keywords(posts):
     # 1-gram
     tokens_1 = tokenize_posts_keywords_1(posts)
     fdist_1 = FreqDist(tokens_1)
-    top_keywords_1 = fdist_1.most_common(10)
+    top_keywords_1 = fdist_1.most_common(100)
     
     tokens_n = tokenize_posts_keywords_n(posts)
 
     # 2-gram
     bigrams = ngrams(tokens_n, 2)
     fdist_2 = FreqDist(bigrams)
-    top_keywords_2 = fdist_2.most_common(10)
+    top_keywords_2 = fdist_2.most_common(100)
     top_keywords_2 = [(f'{keywords[0]} {keywords[1]}', mentions) for keywords, mentions in top_keywords_2]
 
     # 3-gram
     trigrams = ngrams(tokens_n, 3)
     fdist_3 = FreqDist(trigrams)
-    top_keywords_3 = fdist_3.most_common(10)
+    top_keywords_3 = fdist_3.most_common(100)
     top_keywords_3 = [(f'{keywords[0]} {keywords[1]} {keywords[2]}', mentions) for keywords, mentions in top_keywords_3]
 
     top_keywords = top_keywords_1 + top_keywords_2 + top_keywords_3
@@ -110,6 +112,8 @@ def tokenize_posts_keywords_1(posts):
         # Tokenize the input
         tknzr = TweetTokenizer()
         tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
+        for comment in post['comments']:
+            tokens += tknzr.tokenize(comment)
 
         # Lower all tokens
         tokens = list(map(lambda x : x.lower() , tokens))
@@ -149,6 +153,8 @@ def tokenize_posts_keywords_n(posts):
         # Tokenize the input
         tknzr = TweetTokenizer()
         tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
+        for comment in post['comments']:
+            tokens += tknzr.tokenize(comment)
 
         # Remove tokens that are of length less than 2 or longer than 12
         tokens = list(filter(lambda x : len(x) >= 2 and len(x) < 12, tokens))
@@ -176,6 +182,8 @@ def get_top_emoji(posts):
     for post in posts:
         # Get text where we will look for emojis
         text = post['title'] + '. ' + post['selftext']
+        for comment in post['comments']:
+            text += '. ' + comment
 
         # Find emojis
         data = regex.findall(r'\X', text)

@@ -17,7 +17,7 @@ export default function Emojis() {
 
   return (
     <React.Fragment>
-      <Title>Currently Trending</Title>
+      <Title>Top 🅱️emojis</Title>
       <Table size="big">
         <TableHead>
           <TableRow>

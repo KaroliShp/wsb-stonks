@@ -1,6 +1,6 @@
 import React, { useState, useEffect }  from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid } from 'recharts';
 import Title from './Title';
 import AutocompleteSearch from './AutocompleteSearch';
 
@@ -55,9 +55,10 @@ export default function StocksChart() {
             left: 30,
           }}
         >
+          <CartesianGrid stroke="#f5f5f5"/>
           <XAxis dataKey="time" stroke={theme.palette.text.secondary} />
           <YAxis stroke={theme.palette.text.secondary} />
-          <Line type="monotone" dataKey="amount" stroke={theme.palette.primary.dark} dot={false} />
+          <Line type="monotone" dataKey="amount" stroke={theme.palette.primary.dark} />
         </LineChart>
       </ResponsiveContainer>
     </React.Fragment>

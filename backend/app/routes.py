@@ -23,7 +23,8 @@ def stock_frequency_historic(stock_name):
     Display current stock frequency from database (historic)
     """
     stock_frequency = db_client.find_all('stock-frequency-historic', { 'stock_name' : stock_name })[0]['historic_data']
-    return jsonify(sorted(stock_frequency, key=lambda x : datetime.strptime(x['time'], '%H:%M')))
+    stock_frequency.reverse()
+    return jsonify(stock_frequency)
 
 
 @app.route('/api/keyword/top', methods=['GET'])
@@ -42,3 +43,12 @@ def emoji_top():
     """
     top_emoji = db_client.find_all('emoji-top', {})
     return jsonify(top_emoji[:10])
+
+
+@app.route('/api/statistics', methods=['GET'])
+def statistics():
+    """
+    Display statistics
+    """
+    statistics = db_client.find_all('statistics', {})[0]
+    return jsonify(statistics)

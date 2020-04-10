@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import Keywords from './components/Keywords';
 import StocksChart from './components/StocksChart';
 import Emojis from './components/Emojis';
+import Statistics from './components/Statistics';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: '50vh',
+    height: '70vh',
   },
 }));
 
@@ -56,9 +57,7 @@ export default function App() {
           <Grid container spacing={3}>
 
             <Grid item xs={12}>
-              <Paper className={fixedHeightPaper}>
-                <StocksChart />
-              </Paper>
+              <Statistics />
             </Grid>
 
             <Grid item xs={12} md={4}>
@@ -76,6 +75,12 @@ export default function App() {
             <Grid className={classes.grid} item xs={12} md={4}>
               <Paper className={classes.paper}>
                 <Emojis />
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Paper className={fixedHeightPaper}>
+                <StocksChart />
               </Paper>
             </Grid>
 
