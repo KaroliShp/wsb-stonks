@@ -1,4 +1,6 @@
 def calculate_statistics(db_client, new_posts_by_date, new_comments_by_date, update_date):
+    print('Start calculating statistics')
+
     total_posts = 0
     total_comments = 0
     authors = {}
@@ -28,9 +30,7 @@ def calculate_statistics(db_client, new_posts_by_date, new_comments_by_date, upd
                 comment_authors[comment['author']] += 1
             else:
                 comment_authors[comment['author']] = 1
-    
-    print(total_comments_true)
-    
+        
     # Append statistics to a DB object
     statistics = { 'last_update' : update_date }
     statistics['total_posts'] = total_posts
@@ -40,6 +40,6 @@ def calculate_statistics(db_client, new_posts_by_date, new_comments_by_date, upd
     top_comments_author = sorted([ (author, comments) for author, comments in comment_authors.items() ], key=lambda x: x[1], reverse=True)[0]
     statistics['top_comments_author'] = { 'user_name' : top_comments_author[0], 'comments' : top_comments_author[1]  } 
 
-    # Write to DB
-    db_client.delete_many('statistics', {})
-    db_client.create('statistics', statistics)
+    print('End calculating statistics')
+
+    return statistics
