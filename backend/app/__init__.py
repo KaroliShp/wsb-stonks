@@ -26,20 +26,18 @@ def background_job():
     # Get the latest update
     update_date = datetime.now().replace(microsecond=0)  # current update time
     num_of_updates = 23  # how many hours to update (assume we update once an hour)
-    limit = 100  # upper limit of how many posts appeared since last update
+    limit = 400  # upper limit of how many posts appeared since last update
     
     # Fetch new created posts since last update
-    new_posts_by_date = fetch_posts(db_client, update_date, num_of_updates, limit)
+    new_posts_by_date, new_comments_by_date = fetch_posts(db_client, update_date, num_of_updates, limit)
 
     # Calculate statistics
-    calculate_statistics(db_client, new_posts_by_date, update_date)
-
-    return None
+    calculate_statistics(db_client, new_posts_by_date, new_comments_by_date, update_date)
 
     # Process post information and store in DB
     db_client.delete_many('posts-data', {})
     for date, new_posts in new_posts_by_date.items():
-        process_posts(db_client, new_posts, date)
+        process_posts(db_client, new_posts, date, new_comments_by_date[date])
 
     # Calculate most frequent stocks from all posts historically
     get_stock_freq_top(db_client)
@@ -64,8 +62,7 @@ scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 """
 
-#background_job()
-get_all_stocks(db_client)
+background_job()
 
 # Other stuff
 from app import routes

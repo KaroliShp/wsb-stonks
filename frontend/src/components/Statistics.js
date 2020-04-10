@@ -8,7 +8,8 @@ export default function Statistics() {
         'last_update' : 'NaN',
         'total_posts' : 'NaN',
         'total_comments' : 'NaN',
-        'top_author' : { 'user_name' : 'NaN', 'posts' : 'NaN' }
+        'top_author' : { 'user_name' : 'NaN', 'posts' : 'NaN' },
+        'top_comments_author' : { 'user_name' : 'NaN', 'posts' : 'NaN' },
     });
 
     useEffect(() => {
@@ -30,6 +31,9 @@ export default function Statistics() {
             </Typography>
             <Typography variant="h6" align="center">
                 🏆 { statistics.top_author.user_name } is the most activate poster with { statistics.top_author.posts } posts
+            </Typography>
+            <Typography variant="h6" align="center">
+                🏆 { statistics.top_comments_author.user_name } is the most activate commenter with { statistics.top_comments_author.comments } comments
             </Typography>
             <Typography variant="h6" align="center">
                 ⏰ Last update: { statistics.last_update }
