@@ -5,11 +5,11 @@ import Link from '@material-ui/core/Link';
 export default function Statistics() {
 
     const [statistics, setStatistics] = useState({ 
-        'last_update' : 'NaN',
-        'total_posts' : 'NaN',
-        'total_comments' : 'NaN',
-        'top_author' : { 'user_name' : 'NaN', 'posts' : 'NaN' },
-        'top_comments_author' : { 'user_name' : 'NaN', 'posts' : 'NaN' },
+        'last_update' : 'LOADING',
+        'total_posts' : 'LOADING',
+        'total_comments' : 'LOADING',
+        'top_author' : { 'user_name' : 'LOADING', 'posts' : 'LOADING' },
+        'top_comments_author' : { 'user_name' : 'LOADING', 'posts' : 'LOADING' },
     });
 
     useEffect(() => {
@@ -23,20 +23,20 @@ export default function Statistics() {
             <Typography variant="h6" align="center">
                 Past 24 hours:
             </Typography>
-            <Typography variant="h6" align="center">
-                💬 Number of posts analysed: { statistics.total_posts }
+            <Typography variant="subtitle1" align="center">
+                💬 Number of posts analysed: <b>{ statistics.total_posts }</b>
             </Typography>
-            <Typography variant="h6" align="center">
-                💬 Number of comments analysed: { statistics.total_comments }
+            <Typography variant="subtitle1" align="center">
+                💬 Number of comments analysed: <b>{ statistics.total_comments }</b>
             </Typography>
-            <Typography variant="h6" align="center">
-                🏆 { statistics.top_author.user_name } is the most activate poster with { statistics.top_author.posts } posts
+            <Typography variant="subtitle1" align="center">
+                🏆 <b>{ statistics.top_author.user_name }</b> is the most active poster with <b>{ statistics.top_author.posts }</b> posts
             </Typography>
-            <Typography variant="h6" align="center">
-                🏆 { statistics.top_comments_author.user_name } is the most activate commenter with { statistics.top_comments_author.comments } comments
+            <Typography variant="subtitle1" align="center">
+                🏆 <b>{ statistics.top_comments_author.user_name }</b> is the most active commenter with <b>{ statistics.top_comments_author.comments }</b> comments
             </Typography>
-            <Typography variant="h6" align="center">
-                ⏰ Last update: { statistics.last_update }
+            <Typography variant="subtitle1" align="center">
+                ⏰ Last update: <b>{ statistics.last_update }</b>
             </Typography>
         </div>
     );

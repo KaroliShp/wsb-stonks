@@ -5,35 +5,58 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
+import Spinner from './Spinner';
+import { makeStyles } from '@material-ui/core/styles';
+
+
+const useStyles = makeStyles(theme => ({
+  spinner: {
+      textAlign: 'center',
+      fontSize: "2.2em",
+      margin: 'auto'
+  },
+}));
+
 
 export default function StocksFrequency() {
   const [stocks, setStocks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/stock/frequency/top').then(res => res.json()).then(data => {
       setStocks(data);
+      setLoading(false);
     });
   }, []);
+
+  const classes = useStyles();
 
   return (
     <React.Fragment>
       <Title>Most Popular Stonks</Title>
-      <Table size="big">
-        <TableHead>
-          <TableRow>
-            <TableCell>Symbol</TableCell>
-            <TableCell>Post Mentions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {stocks.map(stock => (
-            <TableRow key={stock.id}>
-              <TableCell>{stock.stock_name}</TableCell>
-              <TableCell>{stock.mentions}</TableCell>
+      { loading 
+        ?
+        <div className={classes.spinner}>
+          <Spinner />
+        </div>
+        :
+        <Table size="big">
+          <TableHead>
+            <TableRow>
+              <TableCell align='center'>Symbol</TableCell>
+              <TableCell align='center'>Post Mentions</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {stocks.map(stock => (
+              <TableRow key={stock.id}>
+                <TableCell align='center'>{stock.stock_name}</TableCell>
+                <TableCell align='center'>{stock.mentions}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        }
     </React.Fragment>
   );
 }
