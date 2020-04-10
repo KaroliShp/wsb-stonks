@@ -29,6 +29,7 @@ export default function AutocompleteSearch(props) {
       getOptionLabel={option => option.stock_name}
       style={{ width: 300 }}
       onChange={props.onTagsChange}
+      defaultValue={{'stock_name' : 'SPY'}}
       renderInput={params => <TextField {...params} label="Enter stock symbol" variant="outlined" />}
     />
   );

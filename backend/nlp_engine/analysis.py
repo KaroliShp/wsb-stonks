@@ -54,9 +54,13 @@ def tokenize_posts_stocks(posts):
     for post in posts:
         # Tokenize the input
         tknzr = TweetTokenizer()
-        tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
-        for comment in post['comments']:
-            tokens += tknzr.tokenize(comment)
+        # It's a post
+        if 'title' in post:
+            tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
+        # It's a comment
+        else:
+            tokens = tknzr.tokenize(post['body'])
+
 
         # Lower all tokens
         tokens = list(map(lambda x : x.lower() , tokens))
@@ -111,9 +115,12 @@ def tokenize_posts_keywords_1(posts):
     for post in posts:
         # Tokenize the input
         tknzr = TweetTokenizer()
-        tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
-        for comment in post['comments']:
-            tokens += tknzr.tokenize(comment)
+        # It's a post
+        if 'title' in post:
+            tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
+        # It's a comment
+        else:
+            tokens = tknzr.tokenize(post['body'])
 
         # Lower all tokens
         tokens = list(map(lambda x : x.lower() , tokens))
@@ -143,18 +150,28 @@ def tokenize_posts_keywords_n(posts):
 
     for post in posts:
         # Remove punctuation
-        post['title'] = re.sub('[^a-zA-Z]', ' ', post['title'])
-        post['selftext'] = re.sub('[^a-zA-Z]', ' ', post['selftext'])
+        
+        # It's a post
+        if 'title' in post:
+            post['title'] = re.sub('[^a-zA-Z]', ' ', post['title'])
+            post['selftext'] = re.sub('[^a-zA-Z]', ' ', post['selftext'])
 
-        # Remove special characters and digits
-        post['title'] = re.sub("(\\d|\\W)+", " ", post['title'])
-        post['selftext'] = re.sub("(\\d|\\W)+", " ", post['selftext'])
+            # Remove special characters and digits
+            post['title'] = re.sub("(\\d|\\W)+", " ", post['title'])
+            post['selftext'] = re.sub("(\\d|\\W)+", " ", post['selftext'])
+        # It's a comment
+        else:
+            post['body'] = re.sub('[^a-zA-Z]', ' ', post['body'])
+            post['body'] = re.sub("(\\d|\\W)+", " ", post['body'])
         
         # Tokenize the input
         tknzr = TweetTokenizer()
-        tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
-        for comment in post['comments']:
-            tokens += tknzr.tokenize(comment)
+        # It's a post
+        if 'title' in post:
+            tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
+        # It's a comment
+        else:
+            tokens = tknzr.tokenize(post['body'])
 
         # Remove tokens that are of length less than 2 or longer than 12
         tokens = list(filter(lambda x : len(x) >= 2 and len(x) < 12, tokens))
@@ -181,9 +198,12 @@ def get_top_emoji(posts):
     
     for post in posts:
         # Get text where we will look for emojis
-        text = post['title'] + '. ' + post['selftext']
-        for comment in post['comments']:
-            text += '. ' + comment
+        # It's a post
+        if 'title' in post:
+            text = post['title'] + '. ' + post['selftext']
+        # It's a comment
+        else:
+            text = post['body']
 
         # Find emojis
         data = regex.findall(r'\X', text)

@@ -35,7 +35,7 @@ export default function ButtonAppBar() {
   return (
     <div className={classes.root}>
         <AppBar position="static" style={{ background: 'black' }}>
-        <Toolbar>
+        <Toolbar style={{ margin: 'auto' }}>
             <img src={logo} className={classes.app_logo} alt="logo" />                
             <Typography variant="h6" className={classes.title}>
             r/WSB Stonks  💵💵💵

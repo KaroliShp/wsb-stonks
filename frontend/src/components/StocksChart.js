@@ -28,6 +28,12 @@ export default function StocksChart() {
 
   const [chartData, setChartData] = useState([createData('00:00', 0)]);
 
+  useEffect(() => {
+    fetch('/api/stock/frequency/historic/spy').then(res => res.json()).then(data => {
+      setChartData(data);
+    });
+}, []);
+
   const onTagsChange = (event, values) => {
     if (values != null) {
       fetch('/api/stock/frequency/historic/' + values['stock_name'].toLowerCase()).then(res => res.json()).then(data => {
