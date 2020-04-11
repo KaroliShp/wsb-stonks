@@ -1,6 +1,6 @@
 import React, { useState, useEffect }  from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid, Tooltip, Text } from 'recharts';
 import Title from './Title';
 import AutocompleteSearch from './AutocompleteSearch';
 
@@ -41,7 +41,7 @@ export default function StocksChart() {
       });
     }
   }
-
+  
   return (
     <React.Fragment>
       <AutocompleteSearch onTagsChange={onTagsChange} />
@@ -50,13 +50,14 @@ export default function StocksChart() {
           data={chartData}
           margin={{
             top: 30,
-            bottom: 30,
+            bottom: 50,
           }}
         >
-          <CartesianGrid stroke="#f5f5f5"/>
-          <XAxis dataKey="time" stroke={theme.palette.text.secondary} />
-          <YAxis stroke={theme.palette.text.secondary} />
-          <Line type="monotone" dataKey="amount" stroke={theme.palette.primary.dark} />
+          <Tooltip/>
+          <CartesianGrid strokeDasharray="3 3"/>
+          <XAxis interval={6} label={{ value: 'Past 24 hrs', position: 'insideBottom', offset: -10 }} dataKey="time" stroke={theme.palette.text.secondary} />
+          <YAxis label={{ value: 'Mentions', angle: -90, position: 'insideLeft' }} allowDecimals="false" stroke={theme.palette.text.secondary} />
+          <Line type="linear" dataKey="amount" name="mentions" stroke="#8884d8" activeDot={{r: 8}}/>
         </LineChart>
       </ResponsiveContainer>
     </React.Fragment>

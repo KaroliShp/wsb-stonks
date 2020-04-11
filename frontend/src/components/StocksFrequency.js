@@ -44,7 +44,7 @@ export default function StocksFrequency() {
           <TableHead>
             <TableRow>
               <TableCell align='center'>Symbol</TableCell>
-              <TableCell align='center'>Post Mentions</TableCell>
+              <TableCell align='center'>Mentions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

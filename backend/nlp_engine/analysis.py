@@ -15,10 +15,14 @@ import regex
 import nltk.data
 from collections import Counter
 from nltk import tokenize
+import string
+
 
 STOP_WORDS = set(stopwords.words('english'))
 FORIBIDDEN_WORDS = set(read_foribidden_words())
 STOCKS, COMPANIES = read_stocks()
+STOCKS += [ 'vix', 'vxx', 'rope', 'gdx', 'trnp', 'uso', 'dia', 'iwm', 'gld', 'hyg', 'jnug', 'spxs', 'xle', 'fas'  ]
+STOCKS = set(STOCKS)
 
 
 # Stocks NLP analysis
@@ -46,10 +50,10 @@ def get_stock_frequency(posts, comments):
         text = re.sub(' +', ' ', text).strip() # Remove multiple spaces
         cleaned_text.append(text)
 
-    pattern_1 = "\b\$?([a-z])+ (\d)+/(\d)+\b" # stock month/day
-    pattern_2 = "((buy)|(sell)|(short)|(long)) \$?([a-z])+" # buy/sell/short/long
-    pattern_3 = "\$[a-z]+" # $SPY
-    pattern_4 = "\$?([a-z])+ \$?(\d)+(p|c|\$)" # stock price
+    pattern_1 = r"(\b|\$)([a-z])+ (\d)+/(\d)+\b" # stock month/day
+    pattern_2 = r"((buy)|(sell)|(short)|(long)) \$?([a-z])+" # buy/sell/short/long
+    pattern_3 = r"\$[a-z]+\b" # $SPY
+    pattern_4 = r"(\b|\$)([a-z])+ \$?(\d)+(p|c|\$)\b" # stock price
 
     # Extract stocks mentioned in specific formats
     for text in cleaned_text:
@@ -98,8 +102,9 @@ def get_stock_frequency(posts, comments):
                 break
 
         # Add stock frequency
-        for stock, p in candidate_stocks.items():
+        if len(candidate_stocks) > 0:
             print(to_print)
+        for stock, p in candidate_stocks.items():
             if stock in STOCKS and stock not in FORIBIDDEN_WORDS:
                 print(f'({p}) {stock}')
                 if stock in stock_frequency:
@@ -114,142 +119,66 @@ def get_stock_frequency(posts, comments):
     return [ { 'stock_name' : k.upper(), 'mentions' : v } for k, v in stock_frequency.items() ]
 
 
-def tokenize_posts_stocks(posts):
-    """
-    Preprocess the text
-    """
-    cleaned_posts = []
-
-    for post in posts:
-        # Tokenize the input
-        tknzr = TweetTokenizer()
-        # It's a post
-        if 'title' in post:
-            tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
-        # It's a comment
-        else:
-            tokens = tknzr.tokenize(post['body'])
-
-
-        # Lower all tokens
-        tokens = list(map(lambda x : x.lower() , tokens))
-
-        # Remove tokens that are of length less than 3 or longer than 6
-        tokens = list(filter(lambda x : len(x) >= 3 and len(x) < 6, tokens))
-
-        # Remove numbers
-        tokens = list(filter(lambda x : not is_num(x), tokens))
-
-        # Remove stopwords
-        tokens = list(filter(lambda x : x not in STOP_WORDS, tokens))
-
-        # Remove foribidden words
-        tokens = list(filter(lambda x : x not in FORIBIDDEN_WORDS, tokens))
-
-        cleaned_posts.append(tokens)
-
-    return cleaned_posts
-
-
 # Top keyword NLP analysis
 
 
-def get_top_keywords(posts):    
-    # 1-gram
-    tokens_1 = tokenize_posts_keywords_1(posts)
-    fdist_1 = FreqDist(tokens_1)
-    top_keywords_1 = fdist_1.most_common(100)
+def get_top_keywords(posts, comments):
+    # Extract text for processing
+    raw_text = [] # raw text in sentences
+    for post in posts:
+        raw_text.append(post['title'])
+        raw_text += tokenize.sent_tokenize(post['selftext'])
+    for comment in comments:
+        raw_text += tokenize.sent_tokenize(comment['body'])
     
-    tokens_n = tokenize_posts_keywords_n(posts)
+    # Tokenize
+    tokens = tokenize_posts_keywords(raw_text)
 
+    # 1-gram
+    fdist_1 = FreqDist(tokens)
+    top_keywords_1 = fdist_1.most_common(100)
+    print(top_keywords_1[:10])
+    
     # 2-gram
-    bigrams = ngrams(tokens_n, 2)
+    bigrams = ngrams(tokens, 2)
     fdist_2 = FreqDist(bigrams)
     top_keywords_2 = fdist_2.most_common(100)
     top_keywords_2 = [(f'{keywords[0]} {keywords[1]}', mentions) for keywords, mentions in top_keywords_2]
+    print(top_keywords_2[:10])
 
     # 3-gram
-    trigrams = ngrams(tokens_n, 3)
+    trigrams = ngrams(tokens, 3)
     fdist_3 = FreqDist(trigrams)
     top_keywords_3 = fdist_3.most_common(100)
     top_keywords_3 = [(f'{keywords[0]} {keywords[1]} {keywords[2]}', mentions) for keywords, mentions in top_keywords_3]
+    print(top_keywords_3[:10])
 
     top_keywords = top_keywords_1 + top_keywords_2 + top_keywords_3
     return [{ 'keyword' : keyword, 'mentions' : mentions } for keyword, mentions in top_keywords]
 
 
-def tokenize_posts_keywords_1(posts):
+def tokenize_posts_keywords(raw_text):
+    # Preprocess whole text
+    cleaned_text = []
+    for text in raw_text:
+        text = text.lower() # Convert text to lowercase
+        text = re.sub(r'http\S+', '', text) # Remove URLs
+        text = re.sub(r"[^\w\s]", '', text) # Remove numbers and characters
+        #text = text.translate(str.maketrans('', '', string.punctuation))
+        text = re.sub(' +', ' ', text).strip() # Remove multiple spaces
+        cleaned_text.append(text)
+
+    # Tokenize to words
     tokens_all = []
-
-    for post in posts:
-        # Tokenize the input
-        tknzr = TweetTokenizer()
-        # It's a post
-        if 'title' in post:
-            tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
-        # It's a comment
-        else:
-            tokens = tknzr.tokenize(post['body'])
-
-        # Lower all tokens
-        tokens = list(map(lambda x : x.lower() , tokens))
-
-        # Remove tokens that are of length less than 3 or longer than 12
-        tokens = list(filter(lambda x : len(x) >= 3 and len(x) < 12, tokens))
-
-        # Remove numbers
-        tokens = list(filter(lambda x : not is_num(x), tokens))
+    tknzr = TweetTokenizer()
+    for text in cleaned_text:
+        tokens = tknzr.tokenize(text)
 
         # Remove stopwords
         tokens = list(filter(lambda x : x not in STOP_WORDS, tokens))
 
         # Remove foribidden words
         tokens = list(filter(lambda x : x not in FORIBIDDEN_WORDS, tokens))
-
-        # Lemmatize tokens
-        tokens = list(map(lambda x : WordNetLemmatizer().lemmatize(x, 'v'), tokens))
-
-        tokens_all += tokens
-
-    return tokens_all
-
-
-def tokenize_posts_keywords_n(posts):
-    tokens_all = []
-
-    for post in posts:
-        # Remove punctuation
-        
-        # It's a post
-        if 'title' in post:
-            post['title'] = re.sub('[^a-zA-Z]', ' ', post['title'])
-            post['selftext'] = re.sub('[^a-zA-Z]', ' ', post['selftext'])
-
-            # Remove special characters and digits
-            post['title'] = re.sub("(\\d|\\W)+", " ", post['title'])
-            post['selftext'] = re.sub("(\\d|\\W)+", " ", post['selftext'])
-        # It's a comment
-        else:
-            post['body'] = re.sub('[^a-zA-Z]', ' ', post['body'])
-            post['body'] = re.sub("(\\d|\\W)+", " ", post['body'])
-        
-        # Tokenize the input
-        tknzr = TweetTokenizer()
-        # It's a post
-        if 'title' in post:
-            tokens = tknzr.tokenize(post['title']) + tknzr.tokenize(post['selftext'])
-        # It's a comment
-        else:
-            tokens = tknzr.tokenize(post['body'])
-
-        # Remove tokens that are of length less than 2 or longer than 12
-        tokens = list(filter(lambda x : len(x) >= 2 and len(x) < 12, tokens))
-
-        # Lower all tokens
-        tokens = list(map(lambda x : x.lower() , tokens))
-
-        # Remove stopwords
-        tokens = list(filter(lambda x : x not in STOP_WORDS, tokens))
 
         # Lemmatize tokens
         tokens = list(map(lambda x : WordNetLemmatizer().lemmatize(x, 'v'), tokens))
@@ -291,26 +220,6 @@ def get_top_emoji(posts):
         all_emoji_list.append({ 'emoji' : e, 'mentions' : m })
 
     return all_emoji_list
-
-
-# Helper methods
-
-
-def is_num(string):
-    try:
-        int(string)
-        return True
-    except ValueError:
-        pass
-    try:
-        float(string)
-        return True
-    except ValueError:
-        return False
-
-
-def get_stocks():
-    return STOCKS
 
 
 if __name__ == '__main__':

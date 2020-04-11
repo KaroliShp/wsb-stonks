@@ -42,6 +42,7 @@ def keyword_top():
     Display top keywords
     """
     top_keywords = db_client.find_all('keywords-top', {})
+    top_keywords = sorted(list(filter(lambda x : " " in x['keyword'], top_keywords)), key=lambda x : x['mentions'], reverse=True)
     return jsonify(top_keywords[:10])
 
 

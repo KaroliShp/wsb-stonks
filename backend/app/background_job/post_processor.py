@@ -16,7 +16,7 @@ def process_posts(db_client, new_entries, update_date):
     posts_processed = { **posts_processed, **stock_frequencies }
 
     # Feed new posts into NLP engine to perform keyword analysis
-    top_keywords = { 'keywords' : get_top_keywords(deepcopy(new_entries['posts']) + deepcopy(new_entries['comments'])) }
+    top_keywords = { 'keywords' : get_top_keywords(deepcopy(new_entries['posts']), deepcopy(new_entries['comments'])) }
     posts_processed = { **posts_processed, **top_keywords }
 
     # Feed new posts into NLP engine to perform emoji analysis
