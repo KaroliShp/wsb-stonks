@@ -12,7 +12,7 @@ def process_posts(db_client, new_entries, update_date):
     posts_processed['date'] = update_date
 
     # Feed new posts into NLP engine to perform frequency calculations
-    stock_frequencies = { 'stocks' : get_stock_frequency(deepcopy(new_entries['posts']) + deepcopy(new_entries['comments'])) }
+    stock_frequencies = { 'stocks' : get_stock_frequency(deepcopy(new_entries['posts']), deepcopy(new_entries['comments'])) }
     posts_processed = { **posts_processed, **stock_frequencies }
 
     # Feed new posts into NLP engine to perform keyword analysis
