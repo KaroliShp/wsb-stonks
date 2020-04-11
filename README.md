@@ -27,30 +27,3 @@ In terminal 2:
 $ cd frontend
 $ yarn start # or npm install && npm start
 ```
-
-## NLP
-
-Observations:
-
-- Notice that stocks not always are in capital letters
-- Text can contain links
-- Typically stocks are NN
-
-## Database
-
-### Collection posts-data
-
-Updated on every update cycle and stores processed informaton from each new post that's been fetched. Includes: 
-
-* Update timestamp
-* Stock mentions and their frequency
-* Keywords
-
-### Collection stock-frequency-historic
-
-Contains data for each stock and its historic frequency
-
-### Collection stock-frequency-top
-
-Contains data for top stock mentions in the past 24 hrs
-
