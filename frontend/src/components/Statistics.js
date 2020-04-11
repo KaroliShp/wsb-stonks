@@ -8,7 +8,7 @@ export default function Statistics() {
         'last_update' : 'LOADING',
         'total_posts' : 'LOADING',
         'total_comments' : 'LOADING',
-        'top_author' : { 'user_name' : 'LOADING', 'posts' : 'LOADING' },
+        'top_post_author' : { 'user_name' : 'LOADING', 'posts' : 'LOADING' },
         'top_comments_author' : { 'user_name' : 'LOADING', 'posts' : 'LOADING' },
     });
 
@@ -30,7 +30,7 @@ export default function Statistics() {
                 💬 Number of comments analysed: <b>{ statistics.total_comments }</b>
             </Typography>
             <Typography variant="subtitle1" align="center">
-                🏆 <b>{ statistics.top_author.user_name }</b> is the most active poster with <b>{ statistics.top_author.posts }</b> posts
+                🏆 <b>{ statistics.top_post_author.user_name }</b> is the most active poster with <b>{ statistics.top_post_author.posts }</b> posts
             </Typography>
             <Typography variant="subtitle1" align="center">
                 🏆 <b>{ statistics.top_comments_author.user_name }</b> is the most active commenter with <b>{ statistics.top_comments_author.comments }</b> comments

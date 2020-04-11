@@ -11,7 +11,7 @@ def get_emoji_top(db_client):
     # Find emojis top
     top_emoji = {}
     for data in raw_data:
-        for obj in data['top_emoji']:
+        for obj in data['emoji']:
             if obj['emoji'] in top_emoji:
                 top_emoji[obj['emoji']] += obj['mentions']
             else:

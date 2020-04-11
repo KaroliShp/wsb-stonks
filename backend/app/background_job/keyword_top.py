@@ -11,7 +11,7 @@ def get_keywords_top(db_client):
     # Find keyword top
     top_keywords = {}
     for data in raw_data:
-        for obj in data['top_keywords']:
+        for obj in data['keywords']:
             if obj['keyword'] in top_keywords:
                 top_keywords[obj['keyword']] += obj['mentions']
             else:
@@ -20,8 +20,6 @@ def get_keywords_top(db_client):
     # Convert dictionary to list of tuples
     top_keywords_list = sorted([ { 'keyword' : k, 'mentions' : v } for k, v in top_keywords.items() ], key=lambda x : x['mentions'], reverse=True)
 
-    # Insert the information into DB
-    db_client.delete_many('keywords-top', {})
-    db_client.create_many('keywords-top', top_keywords_list)
-
     print('Finish calculating top keywords')
+
+    return top_keywords_list
