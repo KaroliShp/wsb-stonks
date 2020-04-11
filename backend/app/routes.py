@@ -22,7 +22,7 @@ def stock_frequency_historic(stock_name):
     """
     Display current stock frequency from database (historic)
     """
-    stock_frequency = db_client.find_all('stock-frequency-historic', { 'stock_name' : stock_name })[0]['historic_data']
+    stock_frequency = db_client.find_all('stock-frequency-historic', { 'stock_name' : stock_name.upper() })[0]['historic_data']
     stock_frequency.reverse()
     return jsonify(stock_frequency)
 

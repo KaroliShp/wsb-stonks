@@ -72,8 +72,7 @@ def background_job():
     db_client.create_many('keywords-top', db_top_keywords_list)
 
     db_client.delete_many('emoji-top', {})
-    if len(db_top_emoji_list) > 0:
-        db_client.create_many('emoji-top', db_top_emoji_list)
+    db_client.create_many('emoji-top', db_top_emoji_list)
 
     db_client.delete_many('stock-list', {})
     db_client.create_many('stock-list', db_all_stocks)
