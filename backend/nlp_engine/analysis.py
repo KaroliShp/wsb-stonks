@@ -26,17 +26,14 @@ def get_stock_frequency(posts):
     cleaned_posts = tokenize_posts_stocks(posts)
 
     frequency = {}
-    #company_names_underscores = [ name.replace(" ", "_") for name in company_names]
 
     for post in cleaned_posts:
-        #print(posts[cleaned_posts.index(post)])
         stocks_in_doc = set()
 
         # Find all mentioned stocks in a post
         for token in post:
             if token in STOCKS:
-                stocks_in_doc.add(token.upper())
-                #print(token.upper())
+                stocks_in_doc.add(token.lower())
         
         # Add 1 to frequency of mentioned stocks (mention once per post)
         for stock in stocks_in_doc:
@@ -45,7 +42,8 @@ def get_stock_frequency(posts):
             else:
                 frequency[stock] = 1
     
-    return {k: v for k, v in sorted(frequency.items(), key=lambda item: item[1], reverse=True)}
+    # Restructure and return
+    return [ { 'stock_name' : k, 'mentions' : v } for k, v in frequency.items() ]
 
 
 def tokenize_posts_stocks(posts):
