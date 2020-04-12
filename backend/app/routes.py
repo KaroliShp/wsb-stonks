@@ -1,14 +1,17 @@
 from flask import jsonify
+from flask_cors import cross_origin
 from app import app, db_client
 from datetime import datetime, timedelta
 
 
 @app.route('/api/', methods=['GET'])
+@cross_origin()
 def home():
     return "Hello World"
 
 
 @app.route('/api/stock/frequency/top', methods=['GET'])
+@cross_origin()
 def stock_frequency_top():
     """
     Display current stock frequency from database (top)
@@ -18,6 +21,7 @@ def stock_frequency_top():
 
 
 @app.route('/api/stock/frequency/historic/<string:stock_name>', methods=['GET'])
+@cross_origin()
 def stock_frequency_historic(stock_name):
     """
     Display current stock frequency from database (historic)
@@ -28,6 +32,7 @@ def stock_frequency_historic(stock_name):
 
 
 @app.route('/api/stock/list', methods=['GET'])
+@cross_origin()
 def stock_list():
     """
     Display all stocks
@@ -37,6 +42,7 @@ def stock_list():
 
 
 @app.route('/api/keyword/top', methods=['GET'])
+@cross_origin()
 def keyword_top():
     """
     Display top keywords
@@ -47,6 +53,7 @@ def keyword_top():
 
 
 @app.route('/api/emoji/top', methods=['GET'])
+@cross_origin()
 def emoji_top():
     """
     Display top emojis
@@ -56,6 +63,7 @@ def emoji_top():
 
 
 @app.route('/api/statistics', methods=['GET'])
+@cross_origin()
 def statistics():
     """
     Display statistics

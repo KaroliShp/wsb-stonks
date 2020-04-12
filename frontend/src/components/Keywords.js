@@ -23,7 +23,7 @@ export default function Keywords() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/keyword/top').then(res => res.json()).then(data => {
+    fetch('http://localhost:5000/api/keyword/top').then(res => res.json()).then(data => {
       setKeywords(data);
       setLoading(false);
     });
