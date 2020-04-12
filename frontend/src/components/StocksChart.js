@@ -29,7 +29,7 @@ export default function StocksChart() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/stock/frequency/historic/spy').then(res => res.json()).then(data => {
+    fetch('https://wsbstonks.com/api/stock/frequency/historic/spy').then(res => res.json()).then(data => {
       setChartData(data);
       setLoading(false);
     });
@@ -37,7 +37,7 @@ export default function StocksChart() {
 
   const onTagsChange = (event, values) => {
     if (values != null) {
-      fetch('http://localhost:5000/api/stock/frequency/historic/' + values['stock_name'].toLowerCase()).then(res => res.json()).then(data => {
+      fetch('https://wsbstonks.com/api/stock/frequency/historic/' + values['stock_name'].toLowerCase()).then(res => res.json()).then(data => {
         setChartData(data);
       });
     }
