@@ -8,7 +8,7 @@ export default function AutocompleteSearch(props) {
   const [stocks, setStocks] = useState([{ 'stock_name' : 'NaN' }]);
 
   useEffect(() => {
-    fetch('http://wsbstonks.com/api/stock/list').then(res => res.json()).then(data => {
+    fetch('https://wsbstonks.com/api/stock/list').then(res => res.json()).then(data => {
       setStocks(data);
     });
   }, []);
