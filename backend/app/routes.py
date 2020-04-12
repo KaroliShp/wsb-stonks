@@ -48,7 +48,6 @@ def keyword_top():
     Display top keywords
     """
     top_keywords = db_client.find_all('keywords-top', {})
-    top_keywords = sorted(list(filter(lambda x : " " in x['keyword'], top_keywords)), key=lambda x : x['mentions'], reverse=True)
     return jsonify(top_keywords[:10])
 
 
@@ -79,6 +78,7 @@ def statistics_activity_posts():
     Display post activity statistics
     """
     statistics = db_client.find_all('statistics', {})[0]['posts_activity']
+    statistics.reverse()
     return jsonify(statistics)
 
 
@@ -89,4 +89,5 @@ def statistics_activity_comments():
     Display comment activity statistics
     """
     statistics = db_client.find_all('statistics', {})[0]['comments_activity']
+    statistics.reverse()
     return jsonify(statistics)

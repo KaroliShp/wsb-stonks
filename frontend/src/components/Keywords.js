@@ -33,7 +33,7 @@ export default function Keywords() {
 
   return (
     <React.Fragment>
-      <Title>Currently Trending</Title>
+      <Title>Trending Phrases</Title>
       { loading 
         ?
         <div className={classes.spinner}>
@@ -44,14 +44,12 @@ export default function Keywords() {
           <TableHead>
             <TableRow>
               <TableCell align='center'>Keywords</TableCell>
-              <TableCell align='center'>Mentions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {keywords.map(keyword => (
               <TableRow key={keyword.id}>
                 <TableCell align='center'>{keyword.keyword}</TableCell>
-                <TableCell align='center'>{keyword.mentions}</TableCell>
               </TableRow>
             ))}
           </TableBody>
