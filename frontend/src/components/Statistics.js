@@ -14,7 +14,7 @@ export default function Statistics() {
     });
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/statistics').then(res => res.json()).then(data => {
+        fetch('http://wsbstonks.com/api/statistics').then(res => res.json()).then(data => {
             setStatistics(data);
         });
     }, []);
