@@ -15,7 +15,7 @@ export default function CommentActivityChart() {
   const [chartData, setChartData] = useState([createData('00:00', 0)]);
 
   useEffect(() => {
-    fetch('http://wsbstonks.com/api/statistics/activity/comments').then(res => res.json()).then(data => {
+    fetch('https://wsbstonks.com/api/statistics/activity/comments').then(res => res.json()).then(data => {
       setChartData(data);
     });
 }, []);

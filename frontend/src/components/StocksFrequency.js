@@ -23,7 +23,7 @@ export default function StocksFrequency() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://wsbstonks.com/api/stock/frequency/top').then(res => res.json()).then(data => {
+    fetch('https://wsbstonks.com/api/stock/frequency/top').then(res => res.json()).then(data => {
       setStocks(data);
       setLoading(false);
     });
