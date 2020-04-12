@@ -7,6 +7,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 import Spinner from './Spinner';
 import { makeStyles } from '@material-ui/core/styles';
+import EmojiText from './EmojiText';
 
 
 const useStyles = makeStyles(theme => ({
@@ -18,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function Emojis() {
+export default function Emoji() {
   const [emojis, setEmojis] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +34,7 @@ export default function Emojis() {
 
   return (
     <React.Fragment>
-      <Title>Top 🅱️emoji</Title>
+      <Title>Top <EmojiText symbol="🅱️"/>emoji</Title>
       { loading
         ?
         <div className={classes.spinner}>
@@ -50,7 +51,7 @@ export default function Emojis() {
         <TableBody>
           {emojis.map(emoji => (
             <TableRow key={emoji.id}>
-              <TableCell align='center'>{emoji.emoji}</TableCell>
+              <TableCell align='center'><span role="img">{emoji.emoji}</span></TableCell>
               <TableCell align='center'>{emoji.mentions}</TableCell>
             </TableRow>
           ))}

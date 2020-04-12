@@ -137,21 +137,18 @@ def get_top_keywords(posts, comments):
     # 1-gram
     fdist_1 = FreqDist(tokens)
     top_keywords_1 = fdist_1.most_common(100)
-    print(top_keywords_1[:10])
     
     # 2-gram
     bigrams = ngrams(tokens, 2)
     fdist_2 = FreqDist(bigrams)
     top_keywords_2 = fdist_2.most_common(100)
     top_keywords_2 = [(f'{keywords[0]} {keywords[1]}', mentions) for keywords, mentions in top_keywords_2]
-    print(top_keywords_2[:10])
 
     # 3-gram
     trigrams = ngrams(tokens, 3)
     fdist_3 = FreqDist(trigrams)
     top_keywords_3 = fdist_3.most_common(100)
     top_keywords_3 = [(f'{keywords[0]} {keywords[1]} {keywords[2]}', mentions) for keywords, mentions in top_keywords_3]
-    print(top_keywords_3[:10])
 
     top_keywords = top_keywords_1 + top_keywords_2 + top_keywords_3
     return [{ 'keyword' : keyword, 'mentions' : mentions } for keyword, mentions in top_keywords]
@@ -164,7 +161,6 @@ def tokenize_posts_keywords(raw_text):
         text = text.lower() # Convert text to lowercase
         text = re.sub(r'http\S+', '', text) # Remove URLs
         text = re.sub(r"[^\w\s]", '', text) # Remove numbers and characters
-        #text = text.translate(str.maketrans('', '', string.punctuation))
         text = re.sub(' +', ' ', text).strip() # Remove multiple spaces
         cleaned_text.append(text)
 
@@ -181,7 +177,7 @@ def tokenize_posts_keywords(raw_text):
         tokens = list(filter(lambda x : x not in FORIBIDDEN_WORDS, tokens))
 
         # Lemmatize tokens
-        tokens = list(map(lambda x : WordNetLemmatizer().lemmatize(x, 'v'), tokens))
+        #tokens = list(map(lambda x : WordNetLemmatizer().lemmatize(x, 'v'), tokens))
 
         tokens_all += tokens
 

@@ -90,7 +90,7 @@ scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 """
 
-#background_job()
+background_job()
 
 # Other stuff
 from app import routes
