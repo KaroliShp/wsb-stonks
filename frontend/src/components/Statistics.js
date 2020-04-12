@@ -13,7 +13,7 @@ export default function Statistics() {
     });
 
     useEffect(() => {
-        fetch('/api/statistics').then(res => res.json()).then(data => {
+        fetch('http://localhost:5000/api/statistics').then(res => res.json()).then(data => {
             setStatistics(data);
         });
     }, []);

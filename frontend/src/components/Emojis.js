@@ -23,7 +23,7 @@ export default function Emojis() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/emoji/top').then(res => res.json()).then(data => {
+    fetch('http://localhost:5000/api/emoji/top').then(res => res.json()).then(data => {
       setEmojis(data);
       setLoading(false);
     });

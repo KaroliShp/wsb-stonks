@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from config import Config
 from app.mongo_client import MongoPostRepository
 import atexit
@@ -17,6 +18,10 @@ from app.background_job.stock_list import get_all_stocks
 # Handle application creation
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# CORS
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Handle database connection
 db_client = MongoPostRepository('wsb-stonks')
