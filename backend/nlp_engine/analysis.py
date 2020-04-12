@@ -168,9 +168,9 @@ def get_stock_frequency(posts, comments):
             if stock[0] == '$' or stock[-1] == '$':
                 stock = stock[1:]
             if stock in STOCKS and stock not in FORIBIDDEN_WORDS:
-                print(to_print)
-                print(f'({p}) {stock}')
-                print('\n')
+                #print(to_print)
+                #print(f'({p}) {stock}')
+                #print('\n')
                 if stock in stock_frequency:
                     stock_frequency[stock] += 1
                 else:
