@@ -22,7 +22,7 @@ export default function CommentActivityChart() {
   
   return (
     <React.Fragment>
-        <Title>Comment Activity</Title>
+        <Title>New Comments in the Past 24 Hours</Title>
       <ResponsiveContainer>
         <LineChart
           data={chartData}

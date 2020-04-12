@@ -22,7 +22,7 @@ export default function Statistics() {
     return (
         <div>
             <Typography variant="h6" align="center">
-                Past 24 hours:
+                Past 24 Hours:
             </Typography>
             <Typography variant="subtitle1" align="center">
                 <EmojiText symbol="💬"/> Number of posts analysed: <b>{ statistics.total_posts }</b>

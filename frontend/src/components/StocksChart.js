@@ -2,6 +2,7 @@ import React, { useState, useEffect }  from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip } from 'recharts';
 import AutocompleteSearch from './AutocompleteSearch';
+import Title from './Title';
 
 // Generate default data
 function createData(time, amount) {
@@ -29,6 +30,7 @@ export default function StocksChart() {
   
   return (
     <React.Fragment>
+      <Title>Stock Mentions in the Past 24 Hours</Title>
       <AutocompleteSearch onTagsChange={onTagsChange} />
       <ResponsiveContainer>
         <LineChart
