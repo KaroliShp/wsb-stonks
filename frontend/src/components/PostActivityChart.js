@@ -22,7 +22,7 @@ export default function PostActivityChart() {
   
   return (
     <React.Fragment>
-        <Title>Post Activity</Title>
+        <Title>New Posts in the Past 24 Hours</Title>
       <ResponsiveContainer>
         <LineChart
           data={chartData}
