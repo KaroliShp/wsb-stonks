@@ -70,3 +70,23 @@ def statistics():
     """
     statistics = db_client.find_all('statistics', {})[0]
     return jsonify(statistics)
+
+
+@app.route('/api/statistics/activity/posts', methods=['GET'])
+@cross_origin()
+def statistics_activity_posts():
+    """
+    Display post activity statistics
+    """
+    statistics = db_client.find_all('statistics', {})[0]['posts_activity']
+    return jsonify(statistics)
+
+
+@app.route('/api/statistics/activity/comments', methods=['GET'])
+@cross_origin()
+def statistics_activity_comments():
+    """
+    Display comment activity statistics
+    """
+    statistics = db_client.find_all('statistics', {})[0]['comments_activity']
+    return jsonify(statistics)

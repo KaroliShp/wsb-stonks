@@ -11,8 +11,11 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Keywords from './components/Keywords';
 import StocksChart from './components/StocksChart';
-import Emojis from './components/Emojis';
+import Emoji from './components/Emoji';
 import Statistics from './components/Statistics';
+import PostActivityChart from './components/PostActivityChart';
+import CommentActivityChart from './components/CommentActivityChart';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -79,13 +82,25 @@ export default function App() {
 
             <Grid className={classes.grid} item xs={12} md={4}>
               <Paper className={classes.paper}>
-                <Emojis />
+                <Emoji />
               </Paper>
             </Grid>
 
             <Grid item xs={12}>
               <Paper className={fixedHeightPaper}>
                 <StocksChart />
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Paper className={fixedHeightPaper}>
+                <PostActivityChart />
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Paper className={fixedHeightPaper}>
+                <CommentActivityChart />
               </Paper>
             </Grid>
 
