@@ -13,6 +13,7 @@ from app.background_job.keyword_top import get_keywords_top
 from app.background_job.emoji_top import get_emoji_top
 from app.background_job.statistics_calculator import calculate_statistics
 from app.background_job.stock_list import get_all_stocks
+from nlp_engine.analysis import get_top_keywords_pytextrank
 
 
 # Handle application creation
@@ -30,9 +31,9 @@ db_client = MongoPostRepository('wsb-stonks')
 def background_job():
     # Get the latest update
     update_date = datetime.utcnow().replace(microsecond=0)  # current update time
-    num_of_updates = 23  # how many hours to update (assume we update once an hour)
-    limit = 400  # upper limit of how many posts appeared since last update
-    
+    num_of_updates = 24  # how many hours to update (assume we update once an hour)
+    limit = 300  # upper limit of how many posts appeared since last update
+
     # Fetch new created posts since last update
     new_entries_by_date = fetch_posts(db_client, update_date, num_of_updates, limit)
 
@@ -54,7 +55,8 @@ def background_job():
     db_stocks = get_stock_freq_historic(db_client)
 
     # Get the new keyword top
-    db_top_keywords_list = get_keywords_top(db_client)
+    #db_top_keywords_list = get_keywords_top(db_client)
+    db_top_keywords_list = get_top_keywords_pytextrank(new_entries_by_date)
 
     # Get top emoji
     db_top_emoji_list = get_emoji_top(db_client)
