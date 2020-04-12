@@ -21,14 +21,6 @@ export default function Copyright() {
           <Typography paragraph="true" variant="body2" color="textSecondary" align="center">  
             Data used for visualizations on this Site has been accessed over Reddit API from r/WallStreetBets subreddit.
           </Typography>
-          <Typography variant="body2" color="textSecondary" align="center">
-            <b> Contact information: </b> 
-          </Typography>
-          <Typography paragraph="true" variant="body2" color="textSecondary" align="center"> If you have any inquiries or questions, please contact    { ' ' }
-            <Link color="inherit" href="mailto:karolis@spukas.com">
-              <b>karolis@spukas.com</b>
-            </Link><br/>
-          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2" color="textSecondary" align="center">
