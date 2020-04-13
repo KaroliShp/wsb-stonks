@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 
 def get_stock_freq_top(db_client):
-    print(f'Start calculating stock frequency top')
+    # print(f'Start calculating stock frequency top')
 
     # Get raw frequency info from DB
     last_day = datetime.now() - timedelta(hours=24, minutes=0)
@@ -21,7 +21,7 @@ def get_stock_freq_top(db_client):
             else:
                 top_frequency[data['stock_name']] = data['mentions']
 
-    print('Finish calculating stock frequency top')
+    # print('Finish calculating stock frequency top')
     
     # Sort and return
     return [ { 'stock_name' : k, 'mentions' : v } for k, v in sorted(top_frequency.items(), key=lambda item: item[1], reverse=True)]
@@ -31,7 +31,7 @@ def get_stock_freq_top(db_client):
 
 
 def get_stock_freq_historic(db_client):
-    print(f'Start calculating stock frequency history')
+    # print(f'Start calculating stock frequency history')
 
     # Get all info from DB
     posts_data = db_client.find_all('posts-data', {})
@@ -66,6 +66,6 @@ def get_stock_freq_historic(db_client):
             'historic_data' : historic_data
         })
 
-    print('Finish calculating stock frequency history')
+    # print('Finish calculating stock frequency history')
 
     return stocks

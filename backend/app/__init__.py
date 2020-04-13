@@ -83,16 +83,16 @@ def background_job():
 
     db_client.delete_many('stock-list', {})
     db_client.create_many('stock-list', db_all_stocks)
+    print('Job completed')
 
 
-"""
 scheduler = BackgroundScheduler(timezone="US/Eastern")
-scheduler.add_job(func=background_job, trigger="interval", minutes=15)
+scheduler.add_job(func=background_job, trigger="interval", minutes=60)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
-"""
 
-background_job()
+
+# background_job()
 
 # Other stuff
 from app import routes
