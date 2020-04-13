@@ -2,7 +2,7 @@
 
 Analysing [r/wallstreetbets](https://www.reddit.com/r/wallstreetbets/) for the dankest daily updates. Check our project out at [https://wsbstonks.com](https://wsbstonks.com/)
 
-## 💭About
+## 💭 About
 We are scraping <i>r/wallstreetbets</i> subreddit and doing some interesting NLP analysis about stock mentions, their popularity across time, and keyword mentions.
 
 To achieve this, we have created a Flask API that handles interaction with MongoDB NoSQL database and schedules cron jobs to scrape <i>r/wallstreetbet</i> with PRAW (Reddit API wrapper). The visualizations of the data are rendered by a React web app, which accesses Flask API via proxy. Both frontend and backend services are hosted on GCP App Engine Standard serverless computing environment, while for MongoDB service, we use a MongoDB Atlas cloud cluster.
