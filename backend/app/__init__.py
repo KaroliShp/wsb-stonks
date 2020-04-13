@@ -61,9 +61,6 @@ def background_job():
     # Get top emoji
     db_top_emoji_list = get_emoji_top(db_client)
 
-    # Get all mentioned stocks
-    db_all_stocks = get_all_stocks(db_client)
-
     # Write everything to DB at once
     print('Writing everything to DB')
     db_client.delete_many('statistics', {})
@@ -80,6 +77,9 @@ def background_job():
 
     db_client.delete_many('emoji-top', {})
     db_client.create_many('emoji-top', db_top_emoji_list)
+
+    # Get all mentioned stocks
+    db_all_stocks = get_all_stocks(db_client)
 
     db_client.delete_many('stock-list', {})
     db_client.create_many('stock-list', db_all_stocks)

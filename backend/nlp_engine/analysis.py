@@ -326,7 +326,7 @@ def get_top_keywords_pytextrank(new_entries_by_date):
     top_keywords = []
     for k, v in keywords_rank:
         # Choose a random threshold
-        if global_ranks_mentions[k] < 5:
+        if global_ranks_mentions[k] < 5 or not k.isalnum():
             continue
         #print(f'{k} {global_ranks_mentions[k]} {v}')
         top_keywords.append({ 'keyword' : k, 'mentions' : v })

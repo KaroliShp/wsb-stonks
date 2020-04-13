@@ -68,6 +68,7 @@ def statistics():
     Display statistics
     """
     statistics = db_client.find_all('statistics', {})[0]
+    statistics['last_update'] = f'{statistics["last_update"].strftime("%Y-%m-%d %H:%M:%S")} UTC'
     return jsonify(statistics)
 
 
