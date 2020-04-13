@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 
 def get_emoji_top(db_client):
-    print(f'Start getting top emoji')
+    # print(f'Start getting top emoji')
 
     # Get raw top for each update in DB
     last_day = datetime.now() - timedelta(hours=24, minutes=0)
@@ -20,6 +20,6 @@ def get_emoji_top(db_client):
     # Convert dictionary to list of tuples
     top_emoji_list = sorted([ { 'emoji' : k, 'mentions' : v } for k, v in top_emoji.items() ], key=lambda x : x['mentions'], reverse=True)
 
-    print('Finish calculating top emoji')
+    # print('Finish calculating top emoji')
 
     return top_emoji_list

@@ -18,7 +18,7 @@ def fetch_posts(db_client, update_date, num_of_updates, limit):
     # Calculate the last update date based on how many number of updates (each 1 hr long) we need to perform
     last_update = update_date - timedelta(hours=num_of_updates)
 
-    print(f'Start fetching, current update: {update_date.strftime("%Y-%m-%d %H:%M:%S")}; last update: {last_update.strftime("%Y-%m-%d %H:%M:%S")}')
+    # print(f'Start fetching, current update: {update_date.strftime("%Y-%m-%d %H:%M:%S")}; last update: {last_update.strftime("%Y-%m-%d %H:%M:%S")}')
 
     # Authenticate with reddit API
     reddit_api = praw.Reddit(client_id=CLIENT_ID,
@@ -82,6 +82,6 @@ def fetch_posts(db_client, update_date, num_of_updates, limit):
             # Some comments are fetched after the update date is fixed, so it appears as if its from the future
             pass
 
-    print(f'Done fetching. Number of new posts: {len(new_posts)}. Number of new comments: {len(new_comments)}')
+    # print(f'Done fetching. Number of new posts: {len(new_posts)}. Number of new comments: {len(new_comments)}')
 
     return new_entries_by_date
