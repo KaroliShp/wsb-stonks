@@ -1,5 +1,5 @@
 def calculate_statistics(db_client, new_entries_by_date, update_date):
-    print('Start calculating statistics')
+    # print('Start calculating statistics')
 
     # Statistics to track
     total_posts = 0
@@ -42,6 +42,6 @@ def calculate_statistics(db_client, new_entries_by_date, update_date):
     statistics['posts_activity'] = posts_activity
     statistics['comments_activity'] = comments_activity
 
-    print('End calculating statistics')
+    # print('End calculating statistics')
 
     return statistics

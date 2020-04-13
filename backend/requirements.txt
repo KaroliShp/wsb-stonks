@@ -13,7 +13,7 @@ decorator==4.4.2
 dnspython==1.16.0
 docutils==0.15.2
 emoji==0.5.4
-en-core-web-sm==2.2.0
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.0/en_core_web_sm-2.2.0.tar.gz
 Flask==1.1.1
 Flask-Cors==3.0.7
 Flask-PyMongo==2.3.0
