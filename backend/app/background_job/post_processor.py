@@ -6,7 +6,7 @@ def process_posts(db_client, new_entries, update_date):
     """
     Process posts by extracting information from raw posts such as keywords, stock mentions and put into DB
     """
-    print(f'Start processing posts')
+    # print(f'Start processing posts')
 
     posts_processed = {}
     posts_processed['date'] = update_date
@@ -23,6 +23,6 @@ def process_posts(db_client, new_entries, update_date):
     top_emoji = { 'emoji' : get_top_emoji(deepcopy(new_entries['posts']) + deepcopy(new_entries['comments'])) }
     posts_processed = { **posts_processed, **top_emoji }
 
-    print('Done with processing posts')
+    # print('Done with processing posts')
 
     return posts_processed
