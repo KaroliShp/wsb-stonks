@@ -24,12 +24,20 @@ app.config.from_object(Config)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+# Setup Logging
+import logging
+
+app.logger.setLevel(logging.DEBUG)
+logger_ref = app.logger
+
 # Handle database connection
-db_client = MongoPostRepository('wsb-stonks')
+db_client = MongoPostRepository('wsb-stonks', logger_ref)
+
 
 # Job scheduling
 def background_job():
     # Get the latest update
+    app.logger.debug("Started background job")
     update_date = datetime.utcnow().replace(microsecond=0)  # current update time
     num_of_updates = 24  # how many hours to update (assume we update once an hour)
     limit = 300  # upper limit of how many posts appeared since last update
@@ -62,7 +70,7 @@ def background_job():
     db_top_emoji_list = get_emoji_top(db_client)
 
     # Write everything to DB at once
-    print('Writing everything to DB')
+    app.logger.debug('Writing everything to DB')
     db_client.delete_many('statistics', {})
     db_client.create('statistics', db_statistics)
 
@@ -83,11 +91,11 @@ def background_job():
 
     db_client.delete_many('stock-list', {})
     db_client.create_many('stock-list', db_all_stocks)
-    print('Job completed')
+    app.logger.debug('Job completed')
 
 
 scheduler = BackgroundScheduler(timezone="US/Eastern")
-scheduler.add_job(func=background_job, trigger="interval", minutes=60)
+scheduler.add_job(func=background_job, trigger="interval", minutes=10)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
