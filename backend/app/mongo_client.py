@@ -6,17 +6,18 @@ from pymongo.errors import ConnectionFailure, BulkWriteError
 class MongoPostRepository(object):
 
 
-    def __init__(self, database):
+    def __init__(self, database, logger_ref):
         mongo_url = os.environ.get('MONGO_URL')
         client = MongoClient(mongo_url)
+        self.logger = logger_ref
+        
         try:
             # Check if connected to MongoDB Atlas
             # The ismaster command is cheap and does not require auth.
             client.admin.command('ismaster')
         except ConnectionFailure as e:
-            # TODO: change to log
-            print("Server not available")
-            print(e)
+            self.logger.warning("MongoDB Server not available")
+            self.logger.warning(e)
 
         self.db = client[database]
 
@@ -44,8 +45,8 @@ class MongoPostRepository(object):
         try:
             self.db[collection].insert_many(items, ordered=False)
         except BulkWriteError as e:
-            print('Error')
-            print(e)
+            self.logger.warning('MongoDB BulkWrite Error')
+            self.logger.warning(e)
 
 
     def update(self, collection, selector, item):
