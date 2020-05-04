@@ -15,6 +15,15 @@ from app.background_job.statistics_calculator import calculate_statistics
 from app.background_job.stock_list import get_all_stocks
 from nlp_engine.analysis import get_top_keywords_pytextrank
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+production = True
+if production:
+    sentry_sdk.init(
+        dsn="https://c711d9c16fc043dd897d35d569c8a92d@o378312.ingest.sentry.io/5201503",
+        integrations=[FlaskIntegration()]
+    )
 
 # Handle application creation
 app = Flask(__name__)
@@ -95,7 +104,7 @@ def background_job():
 
 
 scheduler = BackgroundScheduler(timezone="US/Eastern")
-scheduler.add_job(func=background_job, trigger="interval", minutes=10)
+scheduler.add_job(func=background_job, trigger="interval", minutes=12)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
