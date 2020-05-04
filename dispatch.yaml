@@ -1,3 +1,5 @@
 dispatch:
   - url: "*/api/*"
     service: api
+  - url: "*/scraper/*"
+    service: scraper
