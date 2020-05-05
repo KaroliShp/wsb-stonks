@@ -18,7 +18,7 @@ def calculate_statistics(db_client, new_entries_by_date, update_date):
             # Get post authors
             if post['author'] in post_authors:
                 post_authors[post['author']] += 1
-            else:
+            elif post['author'] != 'AutoModerator':
                 post_authors[post['author']] = 1
         
         # Get number of comments for the date
@@ -28,7 +28,7 @@ def calculate_statistics(db_client, new_entries_by_date, update_date):
             # Get comment authors
             if comment['author'] in comment_authors:
                 comment_authors[comment['author']] += 1
-            else:
+            elif comment['author'] != 'AutoModerator':
                 comment_authors[comment['author']] = 1
         
     # Append statistics to a DB object
