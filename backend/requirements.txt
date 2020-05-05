@@ -1,4 +1,5 @@
 APScheduler==3.6.3
+blinker==1.4
 blis==0.4.1
 boto==2.49.0
 boto3==1.12.39
@@ -46,6 +47,7 @@ rq==1.2.2
 s3transfer==0.3.3
 scikit-learn==0.22.2.post1
 scipy==1.4.1
+sentry-sdk==0.14.3
 six==1.14.0
 smart-open==1.11.1
 spacy==2.2.4
