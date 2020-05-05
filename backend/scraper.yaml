@@ -1,6 +1,6 @@
 service: scraper
 runtime: python37
-entrypoint: gunicorn -b :$PORT scraper_main:app --timeout 120
+entrypoint: gunicorn -b :$PORT scraper_main:app --timeout 720
 
 includes:
   - env_variables.yaml

@@ -17,6 +17,7 @@ from nlp_engine.analysis import get_top_keywords_pytextrank
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+# Initialize Sentry SDK (for real-time error tracking)
 production = True
 if production:
     sentry_sdk.init(
@@ -45,7 +46,7 @@ def background_job():
         app.logger.debug("Started background job")
         update_date = datetime.utcnow().replace(microsecond=0)  # current update time
         num_of_updates = 24  # how many hours to update (assume we update once an hour)
-        limit = 150  # upper limit of how many posts appeared since last update
+        limit = 300  # upper limit of how many posts appeared since last update
 
         # Fetch new created posts since last update
         new_entries_by_date = fetch_posts(db_client, update_date, num_of_updates, limit)
