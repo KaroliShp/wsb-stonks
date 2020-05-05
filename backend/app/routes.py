@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 @app.route('/api/', methods=['GET'])
 @cross_origin()
 def home():
+    app.logger.debug("Managed to hit hello")
     return "Hello World"
 
 
