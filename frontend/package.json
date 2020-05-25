@@ -17,6 +17,7 @@
     "material-ui": "^0.20.2",
     "react": "latest",
     "react-dom": "latest",
+    "react-ga": "^2.7.0",
     "react-scripts": "latest",
     "recharts": "^2.0.0-beta.2"
   },
