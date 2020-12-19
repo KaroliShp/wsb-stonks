@@ -1,1 +1,0 @@
-from scraper_cron import app
