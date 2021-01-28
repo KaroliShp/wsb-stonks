@@ -24,7 +24,7 @@ export default function Emoji() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://wsbstonks.com/api/emoji/top').then(res => res.json()).then(data => {
+    fetch('http://127.0.0.1:5000/api/emoji/top').then(res => res.json()).then(data => {
       setEmojis(data);
       setLoading(false);
     });
