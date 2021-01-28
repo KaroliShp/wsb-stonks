@@ -17,7 +17,7 @@ def stock_frequency_top():
     """
     Display current stock frequency from database (top)
     """
-    stock_frequency = db_client.find_all('stock-frequency-top', {})
+    stock_frequency = db_client.find_all('top-stocks-global', {})
     return jsonify(stock_frequency[:10])
 
 
@@ -58,7 +58,7 @@ def emoji_top():
     """
     Display top emojis
     """
-    top_emoji = db_client.find_all('emoji-top', {})
+    top_emoji = db_client.find_all('top-emojis-global', {})
     return jsonify(top_emoji[:10])
 
 
@@ -68,7 +68,7 @@ def statistics():
     """
     Display statistics
     """
-    statistics = db_client.find_all('statistics', {})[0]
+    statistics = db_client.find_all('top-stats-global', {})[0]
     statistics['last_update'] = f'{statistics["last_update"].strftime("%Y-%m-%d %H:%M:%S")} UTC'
     return jsonify(statistics)
 

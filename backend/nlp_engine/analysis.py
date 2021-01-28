@@ -33,19 +33,31 @@ STOCKS = set(STOCKS)
 # Stocks NLP analysis
 
 
-def get_stock_frequency(posts, comments):
+def get_stock_frequency(entries):
     """
     Get stock frequency from input posts for a specific date
     """
     stock_frequency = {}
 
     # Extract text for processing
+    """
     raw_text = [] # raw text in sentences
     for post in posts:
         raw_text.append(post['title'])
         raw_text += tokenize.sent_tokenize(post['selftext'])
     for comment in comments:
         raw_text += tokenize.sent_tokenize(comment['body'])
+    """
+
+    raw_text = [] # raw text in sentences
+    for entry in entries:
+        # Its a post
+        if 'title' in entry:
+            raw_text.append(entry['title'])
+            raw_text += tokenize.sent_tokenize(entry['selftext'])
+        else:
+            raw_text += tokenize.sent_tokenize(entry['body'])
+
 
     # First stage of text preprocessing
     cleaned_text = []
@@ -189,12 +201,23 @@ def get_stock_frequency(posts, comments):
 
 def get_top_keywords(posts, comments):
     # Extract text for processing
+    """
     raw_text = [] # raw text in sentences
     for post in posts:
         raw_text.append(post['title'])
         raw_text += tokenize.sent_tokenize(post['selftext'])
     for comment in comments:
         raw_text += tokenize.sent_tokenize(comment['body'])
+    """
+
+    raw_text = [] # raw text in sentences
+    for entry in entries:
+        # Its a post
+        if 'title' in entry:
+            raw_text.append(entry['title'])
+            raw_text += tokenize.sent_tokenize(entry['selftext'])
+        else:
+            raw_text += tokenize.sent_tokenize(entry['body'])
     
     # Tokenize
     tokens = tokenize_posts_keywords(raw_text)
