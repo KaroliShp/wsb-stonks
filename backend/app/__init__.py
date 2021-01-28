@@ -14,20 +14,21 @@ from app.background_job.keyword_top import get_keywords_top
 from app.background_job.emoji_top import get_emoji_top
 from app.background_job.statistics_calculator import calculate_statistics
 from app.background_job.stock_list import get_all_stocks
+from app.top_intraday_cron.current_price_diff import get_top_k_ticker_data
 from nlp_engine.analysis import get_top_keywords_pytextrank
 from app.background_job.global_state_update import update_top_stocks, update_top_emojis, update_total_stats
 
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
-""" 
-production = True
+import os
+
+production = False
 if production:
     sentry_sdk.init(
         dsn="https://c711d9c16fc043dd897d35d569c8a92d@o378312.ingest.sentry.io/5201503",
         integrations=[FlaskIntegration()]
     )
-""" 
 
 # Handle application creation
 app = Flask(__name__)
@@ -46,6 +47,7 @@ logger_ref = app.logger
 # Handle database connection
 db_client = MongoPostRepository('wsb-stonks-dev', logger_ref)
 
+FINNHUB_API_KEY = os.environ.get('FINNHUB_API_KEY')
 
 # Job scheduling
 def background_job():
@@ -104,14 +106,28 @@ def background_job():
 
     app.logger.debug('Job completed')
 
+
+def intraday_pricing_data_cron():
+    app.logger.debug('Starting intraday cron')
+    # Delete collection
+    db_client.delete_many('top-intraday-data', {})
+    # Fetch new intraday trading data for top tickers
+    top_market_data = get_top_k_ticker_data(db_client, FINNHUB_API_KEY)
+    db_client.create_many('top-intraday-data', top_market_data)
+    # Log job completion
+    app.logger.debug('Intraday cron completed')
+
 """
 scheduler = BackgroundScheduler(timezone="US/Eastern")
 scheduler.add_job(func=background_job, trigger="interval", minutes=12)
+scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 """
 
 background_job()
+
+intraday_pricing_data_cron()
 
 # Other stuff
 from app import routes
