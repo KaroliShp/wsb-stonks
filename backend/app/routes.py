@@ -93,3 +93,12 @@ def statistics_activity_comments():
     statistics = db_client.find_all('statistics', {})[0]['comments_activity']
     statistics.reverse()
     return jsonify(statistics)
+
+@app.route('/api/statistics/realtime/', methods=['GET'])
+@cross_origin()
+def market_data():
+    """
+    Display latest price 10 and a percentage diff from daily open for top 10 stocks mentioned.
+    """
+    intraday_market_data = db_client.find_all('top-intraday-data', {})
+    return jsonify(intraday_market_data)
