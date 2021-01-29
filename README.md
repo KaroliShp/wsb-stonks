@@ -7,7 +7,7 @@ We are scraping <i>r/wallstreetbets</i> subreddit and doing some interesting NLP
 
 To achieve this, we have created a Flask API that handles interaction with MongoDB NoSQL database and schedules cron jobs to scrape <i>r/wallstreetbet</i> with PRAW (Reddit API wrapper). The visualizations of the data are rendered by a React web app, which accesses Flask API via proxy. Both frontend and backend services are hosted on a VM on Digital Ocean Virtual Private Cloud (VPS) Droplet, while for MongoDB service, we use a MongoDB Atlas cloud cluster.
 
-In the past, we used to host GCP App Engine serverless computing environment. If you would like to see how to configurate our React SPA and Python/Flask API for GCP App Engine, head over to [App engine branch of this repo](https://github.com/KaroliShp/wsb-stonks/tree/google-app-engine-deploy).
+In the past, we used to host GCP App Engine serverless computing environment. If you would like to see how to configurate our React SPA and Python/Flask API for GCP App Engine, head over to [App engine branch of this repo](https://github.com/KaroliShp/wsb-stonks/tree/gcp-app-engine).
 
 ## 📊 Data Analysis
 
