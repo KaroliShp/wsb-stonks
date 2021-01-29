@@ -45,7 +45,7 @@ app.logger.setLevel(logging.DEBUG)
 logger_ref = app.logger
 
 # Handle database connection
-db_client = MongoPostRepository('wsb-stonks-dev', logger_ref)
+db_client = MongoPostRepository('wsb-stonks-dev-rytis', logger_ref)
 
 FINNHUB_API_KEY = os.environ.get('FINNHUB_API_KEY')
 
@@ -145,8 +145,8 @@ clean_db()
 app.logger.debug("DB Cleaned")
 
 scheduler = BackgroundScheduler(timezone="UTC")
-scheduler.add_job(func=background_job, trigger="interval", minutes=30, start_date=datetime.utcnow() + timedelta(seconds=30))
-scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=2, start_date=datetime.utcnow() + timedelta(minutes=3))
+scheduler.add_job(func=background_job, trigger="interval", minutes=10, next_run_time=datetime.utcnow() + timedelta(seconds=30))
+scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3, next_run_time=datetime.utcnow() + timedelta(minutes=3))
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
