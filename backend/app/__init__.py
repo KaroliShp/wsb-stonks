@@ -54,7 +54,7 @@ def background_job():
     # Get the latest update
     app.logger.debug("Started background job")
     start_date = datetime.utcnow().replace(microsecond=0)  # current update time
-    end_date = start_date - timedelta(hours=1)
+    end_date = start_date - timedelta(hours=0.5)
     limit_posts = 300
     limit_comments = 5000
 
@@ -118,6 +118,18 @@ def background_job():
     app.logger.debug('Job completed')
 
 
+def clean_db():
+    db_client.delete_many('statistics', {})
+    db_client.delete_many('top-stocks', {})
+    db_client.delete_many('top-emojis', {})
+    db_client.delete_many('top-keywords', {})
+    db_client.delete_many('top-stocks-global', {})
+    db_client.delete_many('top-emojis-global', {})
+    db_client.delete_many('top-stats-global', {})
+    db_client.delete_many('top-stocks-historic', {})
+    db_client.delete_many('stock-list', {})
+
+
 def intraday_pricing_data_cron():
     app.logger.debug('Starting intraday cron')
     # Delete collection
@@ -128,15 +140,15 @@ def intraday_pricing_data_cron():
     # Log job completion
     app.logger.debug('Intraday cron completed')
 
-"""
+
 scheduler = BackgroundScheduler(timezone="US/Eastern")
-scheduler.add_job(func=background_job, trigger="interval", minutes=12)
+scheduler.add_job(func=background_job, trigger="interval", minutes=30)
 scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
-"""
 
-background_job()
+#background_job()
+#clean_db()
 
 #intraday_pricing_data_cron()
 
