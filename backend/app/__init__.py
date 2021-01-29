@@ -55,8 +55,8 @@ def background_job():
     app.logger.debug("Started background job")
     start_date = datetime.utcnow().replace(microsecond=0)  # current update time
     end_date = start_date - timedelta(hours=0.5)
-    limit_posts = 300
-    limit_comments = 5000
+    limit_posts = 500
+    limit_comments = 10000
 
     # The following code will collect new hour stats
 
@@ -145,7 +145,7 @@ clean_db()
 app.logger.debug("DB Cleaned")
 
 scheduler = BackgroundScheduler(timezone="UTC")
-scheduler.add_job(func=background_job, trigger="interval", minutes=10, next_run_time=datetime.utcnow() + timedelta(seconds=30))
+scheduler.add_job(func=background_job, trigger="interval", minutes=30, next_run_time=datetime.utcnow() + timedelta(seconds=30))
 scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3, next_run_time=datetime.utcnow() + timedelta(minutes=3))
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
