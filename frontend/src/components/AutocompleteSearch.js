@@ -6,9 +6,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 export default function AutocompleteSearch(props) {
   
   const [stocks, setStocks] = useState([{ 'stock_name' : 'GME' }]);
-
   useEffect(() => {
-    fetch('http://127.0.0.1:5000/api/stock/list').then(res => res.json()).then(data => {
+    const isProduction = (process.env.NODE_ENV === 'production');
+    const ipAddr = (isProduction ? 'https://wsbstonks.com/' : 'http://127.0.0.1:5000/');
+    fetch(ipAddr.concat('api/stock/list')).then(res => res.json()).then(data => {
       setStocks(data);
     });
   }, []);

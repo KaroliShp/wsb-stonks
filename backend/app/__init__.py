@@ -4,7 +4,7 @@ from config import Config
 from app.mongo_client import MongoPostRepository
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json 
 
 from app.background_job.post_fetcher import fetch_posts, fetch_comments
@@ -141,14 +141,16 @@ def intraday_pricing_data_cron():
     app.logger.debug('Intraday cron completed')
 
 
-scheduler = BackgroundScheduler(timezone="US/Eastern")
-scheduler.add_job(func=background_job, trigger="interval", minutes=30)
-scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3)
+clean_db()
+app.logger.debug("DB Cleaned")
+
+scheduler = BackgroundScheduler(timezone="UTC")
+scheduler.add_job(func=background_job, trigger="interval", minutes=30, start_date=datetime.utcnow() + timedelta(seconds=30))
+scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=2, start_date=datetime.utcnow() + timedelta(minutes=3))
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
 #background_job()
-#clean_db()
 
 #intraday_pricing_data_cron()
 
