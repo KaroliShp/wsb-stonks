@@ -28,7 +28,7 @@ FORIBIDDEN_WORDS = set(read_foribidden_words())
 STOCKS, COMPANIES = read_stocks()
 STOCKS += [ 'vix', 'vxx', 'rope', 'gdx', 'trnp', 'uso', 'dia', 'iwm', 'gld', 'hyg', 'jnug', 'spxs', 'xle', 'fas', 'uso' ]
 STOCKS = set(STOCKS)
-
+EXTRA_STOCKS = [ 'gme', 'bb', 'nok', 'amc' ]
 
 # Stocks NLP analysis
 
@@ -97,7 +97,7 @@ def get_stock_frequency(entries):
         pattern_5_list.append(pattern_5)
     pattern_5 = r'|'.join(pattern_5_list)
 
-    verbs = [ 'buy', 'buys', 'bought', 'buying', 'sell', 'sells', 'sold', 'selling', 'short', 'shorts', 'shorted', 'long', 'longed', 'longs' ]
+    verbs = [ 'buy', 'buys', 'bought', 'buying', 'sell', 'sells', 'sold', 'selling', 'short', 'shorts', 'shorted', 'long', 'longed', 'longs', 'hold', 'held' ]
     verbs = [ f'({v})' for v in verbs ]
     verbs_regex = '|'.join(verbs)
     pattern_2 = r"(" + verbs_regex + r") \$?([a-z])+ ((calls)|(puts)|(call)|(put))?" # buy/sell/short/long
@@ -199,7 +199,7 @@ def get_stock_frequency(entries):
 # Top keyword NLP analysis
 
 
-def get_top_keywords(posts, comments):
+def get_top_keywords(entries):
     # Extract text for processing
     """
     raw_text = [] # raw text in sentences
@@ -304,8 +304,9 @@ def get_top_keywords_all_ngrams(new_entries_by_date):
     return most_common
 
 
-def get_top_keywords_pytextrank(new_entries_by_date):
+def get_top_keywords_pytextrank(entries):
     # Get the raw text (sentences)
+    """ 
     raw_text = []
     for date, new_entries in new_entries_by_date.items():
         for post in deepcopy(new_entries['posts']):
@@ -313,6 +314,15 @@ def get_top_keywords_pytextrank(new_entries_by_date):
             raw_text += tokenize.sent_tokenize(post['selftext'])
         for comment in deepcopy(new_entries['comments']):
             raw_text += tokenize.sent_tokenize(comment['body'])
+    """ 
+    raw_text = [] # raw text in sentences
+    for entry in entries:
+        # Its a post
+        if 'title' in entry:
+            raw_text.append(entry['title'])
+            raw_text += tokenize.sent_tokenize(entry['selftext'])
+        else:
+            raw_text += tokenize.sent_tokenize(entry['body'])
 
     # Preprocess and calculate keywords per 100000 characters
     global_ranks = {}

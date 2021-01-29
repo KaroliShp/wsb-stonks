@@ -23,7 +23,7 @@ export default function Keywords() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://wsbstonks.com/api/keyword/top').then(res => res.json()).then(data => {
+    fetch('http://127.0.0.1:5000/api/keyword/top').then(res => res.json()).then(data => {
       setKeywords(data);
       setLoading(false);
     });

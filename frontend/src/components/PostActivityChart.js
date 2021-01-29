@@ -28,7 +28,7 @@ export default function PostActivityChart() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://wsbstonks.com/api/statistics/activity/posts').then(res => res.json()).then(data => {
+    fetch('http://127.0.0.1:5000/api/statistics/activity/posts').then(res => res.json()).then(data => {
       setChartData(data);
       setLoading(false);
     });
