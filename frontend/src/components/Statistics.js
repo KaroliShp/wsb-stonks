@@ -14,7 +14,9 @@ export default function Statistics() {
     });
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/api/statistics').then(res => res.json()).then(data => {
+        const isProduction = (process.env.NODE_ENV === 'production');
+        const ipAddr = (isProduction ? 'https://wsbstonks.com/' : 'http://127.0.0.1:5000/');
+        fetch(ipAddr.concat('api/statistics')).then(res => res.json()).then(data => {
             setStatistics(data);
         });
     }, []);

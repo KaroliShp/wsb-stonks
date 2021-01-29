@@ -26,9 +26,10 @@ export default function CommentActivityChart() {
 
   const [chartData, setChartData] = useState([createData('00:00', 0)]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    fetch('http://127.0.0.1:5000/api/statistics/activity/comments').then(res => res.json()).then(data => {
+    const isProduction = (process.env.NODE_ENV === 'production');
+    const ipAddr = (isProduction ? 'https://wsbstonks.com/' : 'http://127.0.0.1:5000/');
+    fetch(ipAddr.concat('api/statistics/activity/comments')).then(res => res.json()).then(data => {
       setChartData(data);
       setLoading(false);
     });
