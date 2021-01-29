@@ -7,7 +7,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta, timezone
 import json 
 
-from app.background_job.post_fetcher import fetch_posts, fetch_comments
+from app.background_job.post_fetcher import RedditPostFetcher
 from app.background_job.post_processor import process_posts
 from app.background_job.stock_frequency import get_stock_freq_historic, get_stock_freq_top
 from app.background_job.keyword_top import get_keywords_top
@@ -23,7 +23,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 import os
 
-production = False
+production = bool(os.environ.get("PRODUCTION-SENTRY"))
 if production:
     sentry_sdk.init(
         dsn="https://c711d9c16fc043dd897d35d569c8a92d@o378312.ingest.sentry.io/5201503",
@@ -37,6 +37,13 @@ app.config.from_object(Config)
 # CORS
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+
+# Reddit API via Praw setup
+CLIENT_ID = os.environ.get("PRAW_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("PRAW_CLIENT_SECRET")
+USER_AGENT = os.environ.get("PRAW_USER_AGENT")
+
+reddit_fetcher = RedditPostFetcher(CLIENT_ID, CLIENT_SECRET, USER_AGENT)
 
 # Setup Logging
 import logging
@@ -61,8 +68,8 @@ def background_job():
     # The following code will collect new hour stats
 
     # Fetch new created posts since last update
-    new_posts= fetch_posts(db_client, start_date, end_date, limit_posts)
-    new_comments = fetch_comments(db_client, start_date, end_date, limit_comments)
+    new_posts= reddit_fetcher.fetch_posts(db_client, start_date, end_date, limit_posts)
+    new_comments = reddit_fetcher.fetch_comments(db_client, start_date, end_date, limit_comments)
     """
     new_posts = []
     with open('posts.txt') as f:
