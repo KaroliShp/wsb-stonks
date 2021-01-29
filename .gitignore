@@ -161,3 +161,6 @@ secrets
 
 nltk_data/
 env_variables.yaml
+
+posts.txt
+comments.txt

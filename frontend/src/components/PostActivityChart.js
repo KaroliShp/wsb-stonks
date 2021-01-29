@@ -28,7 +28,9 @@ export default function PostActivityChart() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://wsbstonks.com/api/statistics/activity/posts').then(res => res.json()).then(data => {
+    const isProduction = (process.env.NODE_ENV === 'production');
+    const ipAddr = (isProduction ? 'https://wsbstonks.com/' : 'http://127.0.0.1:5000/');
+    fetch(ipAddr.concat('api/statistics/activity/posts')).then(res => res.json()).then(data => {
       setChartData(data);
       setLoading(false);
     });

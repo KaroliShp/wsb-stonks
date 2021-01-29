@@ -17,7 +17,7 @@ def stock_frequency_top():
     """
     Display current stock frequency from database (top)
     """
-    stock_frequency = db_client.find_all('stock-frequency-top', {})
+    stock_frequency = db_client.find_all('top-stocks-global', {})
     return jsonify(stock_frequency[:10])
 
 
@@ -27,9 +27,11 @@ def stock_frequency_historic(stock_name):
     """
     Display current stock frequency from database (historic)
     """
-    stock_frequency = db_client.find_all('stock-frequency-historic', { 'stock_name' : stock_name.upper() })[0]['historic_data']
-    stock_frequency.reverse()
-    return jsonify(stock_frequency)
+    stock_frequency = db_client.find_all('top-stocks-historic', { 'stock_name' : stock_name.upper() })
+    if stock_frequency:
+        stock_frequency = stock_frequency[0]['historic_data']
+        stock_frequency.reverse()
+        return jsonify(stock_frequency)
 
 
 @app.route('/api/stock/list', methods=['GET'])
@@ -48,7 +50,7 @@ def keyword_top():
     """
     Display top keywords
     """
-    top_keywords = db_client.find_all('keywords-top', {})
+    top_keywords = db_client.find_all('top-keywords', {})
     return jsonify(top_keywords[:10])
 
 
@@ -58,7 +60,7 @@ def emoji_top():
     """
     Display top emojis
     """
-    top_emoji = db_client.find_all('emoji-top', {})
+    top_emoji = db_client.find_all('top-emojis-global', {})
     return jsonify(top_emoji[:10])
 
 
@@ -68,7 +70,7 @@ def statistics():
     """
     Display statistics
     """
-    statistics = db_client.find_all('statistics', {})[0]
+    statistics = db_client.find_all('top-stats-global', {})[0]
     statistics['last_update'] = f'{statistics["last_update"].strftime("%Y-%m-%d %H:%M:%S")} UTC'
     return jsonify(statistics)
 
@@ -79,8 +81,7 @@ def statistics_activity_posts():
     """
     Display post activity statistics
     """
-    statistics = db_client.find_all('statistics', {})[0]['posts_activity']
-    statistics.reverse()
+    statistics = db_client.find_all('top-stats-global', {})[0]['posts_activity']
     return jsonify(statistics)
 
 
@@ -90,6 +91,14 @@ def statistics_activity_comments():
     """
     Display comment activity statistics
     """
-    statistics = db_client.find_all('statistics', {})[0]['comments_activity']
-    statistics.reverse()
+    statistics = db_client.find_all('top-stats-global', {})[0]['comments_activity']
     return jsonify(statistics)
+
+@app.route('/api/statistics/realtime/', methods=['GET'])
+@cross_origin()
+def market_data():
+    """
+    Display latest price 10 and a percentage diff from daily open for top 10 stocks mentioned.
+    """
+    intraday_market_data = db_client.find_all('top-intraday-data', {})
+    return jsonify(intraday_market_data)

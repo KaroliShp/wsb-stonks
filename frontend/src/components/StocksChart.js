@@ -29,7 +29,9 @@ export default function StocksChart() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://wsbstonks.com/api/stock/frequency/historic/spy').then(res => res.json()).then(data => {
+    const isProduction = (process.env.NODE_ENV === 'production');
+    const ipAddr = (isProduction ? 'https://wsbstonks.com/' : 'http://127.0.0.1:5000/');
+    fetch(ipAddr.concat('api/stock/frequency/historic/gme')).then(res => res.json()).then(data => {
       setChartData(data);
       setLoading(false);
     });
@@ -37,7 +39,9 @@ export default function StocksChart() {
 
   const onTagsChange = (event, values) => {
     if (values != null) {
-      fetch('https://wsbstonks.com/api/stock/frequency/historic/' + values['stock_name'].toLowerCase()).then(res => res.json()).then(data => {
+      const isProduction = (process.env.NODE_ENV === 'production');
+      const ipAddr = (isProduction ? 'https://wsbstonks.com/' : 'http://127.0.0.1:5000/');
+      fetch(ipAddr.concat('api/stock/frequency/historic/') + values['stock_name'].toLowerCase()).then(res => res.json()).then(data => {
         setChartData(data);
       });
     }

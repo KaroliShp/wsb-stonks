@@ -4,21 +4,26 @@ from config import Config
 from app.mongo_client import MongoPostRepository
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+import json 
 
-from app.background_job.post_fetcher import fetch_posts
+from app.background_job.post_fetcher import fetch_posts, fetch_comments
 from app.background_job.post_processor import process_posts
 from app.background_job.stock_frequency import get_stock_freq_historic, get_stock_freq_top
 from app.background_job.keyword_top import get_keywords_top
 from app.background_job.emoji_top import get_emoji_top
 from app.background_job.statistics_calculator import calculate_statistics
 from app.background_job.stock_list import get_all_stocks
+from app.top_intraday_cron.current_price_diff import get_top_k_ticker_data
 from nlp_engine.analysis import get_top_keywords_pytextrank
+from app.background_job.global_state_update import update_top_stocks, update_top_emojis, update_total_stats, update_top_stocks_historic
 
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
-production = True
+import os
+
+production = False
 if production:
     sentry_sdk.init(
         dsn="https://c711d9c16fc043dd897d35d569c8a92d@o378312.ingest.sentry.io/5201503",
@@ -40,76 +45,114 @@ app.logger.setLevel(logging.DEBUG)
 logger_ref = app.logger
 
 # Handle database connection
-db_client = MongoPostRepository('wsb-stonks', logger_ref)
+db_client = MongoPostRepository('wsb-stonks-dev', logger_ref)
 
+FINNHUB_API_KEY = os.environ.get('FINNHUB_API_KEY')
 
 # Job scheduling
 def background_job():
     # Get the latest update
     app.logger.debug("Started background job")
-    update_date = datetime.utcnow().replace(microsecond=0)  # current update time
-    num_of_updates = 24  # how many hours to update (assume we update once an hour)
-    limit = 300  # upper limit of how many posts appeared since last update
+    start_date = datetime.utcnow().replace(microsecond=0)  # current update time
+    end_date = start_date - timedelta(hours=0.5)
+    limit_posts = 300
+    limit_comments = 5000
+
+    # The following code will collect new hour stats
 
     # Fetch new created posts since last update
-    new_entries_by_date = fetch_posts(db_client, update_date, num_of_updates, limit)
+    new_posts= fetch_posts(db_client, start_date, end_date, limit_posts)
+    new_comments = fetch_comments(db_client, start_date, end_date, limit_comments)
+    """
+    new_posts = []
+    with open('posts.txt') as f:
+        new_posts = json.load(f)
+
+    new_comments = []
+    with open('comments.txt') as f:
+        new_comments = json.load(f)
+    """
 
     # Calculate statistics
-    db_statistics = calculate_statistics(db_client, new_entries_by_date, update_date)
+    db_statistics = calculate_statistics(db_client, new_posts, new_comments, start_date, end_date)
+    new_entries = new_posts + new_comments
+    db_top_stocks, db_top_emojis, db_top_keywords  = process_posts(db_client, new_entries, start_date, end_date)
 
-    # Process post information
-    db_posts_processed_all = []
-    for date, new_entries in new_entries_by_date.items():
-        db_posts_processed_all.append(process_posts(db_client, new_entries, date))
-    db_client.delete_many('posts-data', {})
-    for db_posts_processed in db_posts_processed_all:
-        db_client.create('posts-data', db_posts_processed)
-
-    # Calculate most frequent stocks from all posts historically
-    db_top_frequency_list = get_stock_freq_top(db_client)
-
-    # Calculate stock frequency of all posts historically
-    db_stocks = get_stock_freq_historic(db_client)
-
-    # Get the new keyword top
-    #db_top_keywords_list = get_keywords_top(db_client)
-    db_top_keywords_list = get_top_keywords_pytextrank(new_entries_by_date)
-
-    # Get top emoji
-    db_top_emoji_list = get_emoji_top(db_client)
-
-    # Write everything to DB at once
+    # Save all info into DB for this time slot
     app.logger.debug('Writing everything to DB')
-    db_client.delete_many('statistics', {})
+
+    #db_client.delete_many('statistics', {})
     db_client.create('statistics', db_statistics)
 
-    db_client.delete_many('stock-frequency-top', {})
-    db_client.create_many('stock-frequency-top', db_top_frequency_list)
-    
-    db_client.delete_many('stock-frequency-historic', {})
-    db_client.create_many('stock-frequency-historic', db_stocks)
+    #db_client.delete_many('top-stocks', {})
+    db_client.create('top-stocks', db_top_stocks)
 
-    db_client.delete_many('keywords-top', {})
-    db_client.create_many('keywords-top', db_top_keywords_list)
+    #db_client.delete_many('top-emojis', {})
+    db_client.create('top-emojis', db_top_emojis)
 
-    db_client.delete_many('emoji-top', {})
-    db_client.create_many('emoji-top', db_top_emoji_list)
+    db_client.delete_many('top-keywords', {})
+    db_client.create_many('top-keywords', db_top_keywords)
+
+    # Update total counts
+    db_global_stocks_top = update_top_stocks(db_client, start_date, end_date)
+    db_client.delete_many('top-stocks-global', {})
+    db_client.create_many('top-stocks-global', db_global_stocks_top)
+
+    db_global_emojis_top = update_top_emojis(db_client, start_date, end_date)
+    db_client.delete_many('top-emojis-global', {})
+    db_client.create_many('top-emojis-global', db_global_emojis_top)
+
+    db_global_stats_top = update_total_stats(db_client, start_date, end_date)
+    db_client.delete_many('top-stats-global', {})
+    db_client.create('top-stats-global', db_global_stats_top)
+
+    db_global_stocks_historic = update_top_stocks_historic(db_client, start_date, end_date)
+    db_client.delete_many('top-stocks-historic', {})
+    db_client.create_many('top-stocks-historic', db_global_stocks_historic)
 
     # Get all mentioned stocks
     db_all_stocks = get_all_stocks(db_client)
-
     db_client.delete_many('stock-list', {})
     db_client.create_many('stock-list', db_all_stocks)
+
     app.logger.debug('Job completed')
 
 
-scheduler = BackgroundScheduler(timezone="US/Eastern")
-scheduler.add_job(func=background_job, trigger="interval", minutes=12)
+def clean_db():
+    db_client.delete_many('statistics', {})
+    db_client.delete_many('top-stocks', {})
+    db_client.delete_many('top-emojis', {})
+    db_client.delete_many('top-keywords', {})
+    db_client.delete_many('top-stocks-global', {})
+    db_client.delete_many('top-emojis-global', {})
+    db_client.delete_many('top-stats-global', {})
+    db_client.delete_many('top-stocks-historic', {})
+    db_client.delete_many('stock-list', {})
+
+
+def intraday_pricing_data_cron():
+    app.logger.debug('Starting intraday cron')
+    # Delete collection
+    db_client.delete_many('top-intraday-data', {})
+    # Fetch new intraday trading data for top tickers
+    top_market_data = get_top_k_ticker_data(db_client, FINNHUB_API_KEY)
+    db_client.create_many('top-intraday-data', top_market_data)
+    # Log job completion
+    app.logger.debug('Intraday cron completed')
+
+
+clean_db()
+app.logger.debug("DB Cleaned")
+
+scheduler = BackgroundScheduler(timezone="UTC")
+scheduler.add_job(func=background_job, trigger="interval", minutes=30, start_date=datetime.utcnow() + timedelta(seconds=30))
+scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=2, start_date=datetime.utcnow() + timedelta(minutes=3))
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
+#background_job()
 
-# background_job()
+#intraday_pricing_data_cron()
 
 # Other stuff
 from app import routes
