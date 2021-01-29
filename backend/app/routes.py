@@ -27,9 +27,10 @@ def stock_frequency_historic(stock_name):
     """
     Display current stock frequency from database (historic)
     """
-    stock_frequency = db_client.find_all('stock-frequency-historic', { 'stock_name' : stock_name.upper() })[0]['historic_data']
-    stock_frequency.reverse()
-    return jsonify(stock_frequency)
+    stock_frequency = db_client.find_all('top-stocks-historic', { 'stock_name' : stock_name.upper() })
+    if stock_frequency:
+        stock_frequency = stock_frequency[0]['historic_data']
+        return jsonify(stock_frequency)
 
 
 @app.route('/api/stock/list', methods=['GET'])
@@ -48,7 +49,7 @@ def keyword_top():
     """
     Display top keywords
     """
-    top_keywords = db_client.find_all('keywords-top', {})
+    top_keywords = db_client.find_all('top-keywords', {})
     return jsonify(top_keywords[:10])
 
 
@@ -79,8 +80,7 @@ def statistics_activity_posts():
     """
     Display post activity statistics
     """
-    statistics = db_client.find_all('statistics', {})[0]['posts_activity']
-    statistics.reverse()
+    statistics = db_client.find_all('top-stats-global', {})[0]['posts_activity']
     return jsonify(statistics)
 
 
@@ -90,8 +90,7 @@ def statistics_activity_comments():
     """
     Display comment activity statistics
     """
-    statistics = db_client.find_all('statistics', {})[0]['comments_activity']
-    statistics.reverse()
+    statistics = db_client.find_all('top-stats-global', {})[0]['comments_activity']
     return jsonify(statistics)
 
 @app.route('/api/statistics/realtime/', methods=['GET'])

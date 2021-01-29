@@ -30,7 +30,7 @@ def fetch_posts(db_client, start_date, end_date, limit):
     # Proceed with only those posts that were created after the last update and are not in the system
     new_posts = []
     for post in last_posts:
-        if datetime.utcfromtimestamp(post.created_utc) > end_date:
+        if datetime.utcfromtimestamp(post.created_utc) > end_date and datetime.utcfromtimestamp(post.created_utc) < start_date:
             # Append the new post information
             try:
                 new_posts.append({ 
@@ -46,9 +46,10 @@ def fetch_posts(db_client, start_date, end_date, limit):
                 # User/post deleted
                 pass
 
+    """
     with open('posts.txt', 'w') as file:
         file.write(json.dumps(new_posts[:10], indent=4, sort_keys=True, default=str))
-
+    """
 
     print(f'Done fetching. Number of new posts: {len(new_posts)}')
 
@@ -72,7 +73,7 @@ def fetch_comments(db_client, start_date, end_date, limit):
     # Proceed with only those posts that were created after the last update and are not in the system
     new_comments = []
     for comment in last_comments:
-        if datetime.utcfromtimestamp(comment.created_utc) > end_date:
+        if datetime.utcfromtimestamp(comment.created_utc) > end_date and datetime.utcfromtimestamp(comment.created_utc) < start_date :
             # Extract comments
             try:
                 new_comments.append({ 
@@ -86,9 +87,11 @@ def fetch_comments(db_client, start_date, end_date, limit):
                 # User/comment deleted
                 pass
 
+    """
     with open('comments.txt', 'w') as file:
         file.write(json.dumps(new_comments[:10], indent=4, sort_keys=True, default=str))
-    
+    """
+
     print(f'Done fetching. Number of new comments: {len(new_comments)}')
 
     return new_comments
