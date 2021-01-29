@@ -28,7 +28,7 @@ export default function CommentActivityChart() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://wsbstonks.com/api/statistics/activity/comments').then(res => res.json()).then(data => {
+    fetch('http://127.0.0.1:5000/api/statistics/activity/comments').then(res => res.json()).then(data => {
       setChartData(data);
       setLoading(false);
     });

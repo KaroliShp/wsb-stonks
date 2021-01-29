@@ -16,7 +16,7 @@ from app.background_job.statistics_calculator import calculate_statistics
 from app.background_job.stock_list import get_all_stocks
 from app.top_intraday_cron.current_price_diff import get_top_k_ticker_data
 from nlp_engine.analysis import get_top_keywords_pytextrank
-from app.background_job.global_state_update import update_top_stocks, update_top_emojis, update_total_stats
+from app.background_job.global_state_update import update_top_stocks, update_top_emojis, update_total_stats, update_top_stocks_historic
 
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -55,14 +55,15 @@ def background_job():
     app.logger.debug("Started background job")
     start_date = datetime.utcnow().replace(microsecond=0)  # current update time
     end_date = start_date - timedelta(hours=1)
-    limit_posts = 50
-    limit_comments = 500
+    limit_posts = 300
+    limit_comments = 5000
 
     # The following code will collect new hour stats
 
     # Fetch new created posts since last update
-    #new_posts= fetch_posts(db_client, start_date, end_date, limit_posts)
-    #new_comments = fetch_comments(db_client, start_date, end_date, limit_comments)
+    new_posts= fetch_posts(db_client, start_date, end_date, limit_posts)
+    new_comments = fetch_comments(db_client, start_date, end_date, limit_comments)
+    """
     new_posts = []
     with open('posts.txt') as f:
         new_posts = json.load(f)
@@ -70,11 +71,12 @@ def background_job():
     new_comments = []
     with open('comments.txt') as f:
         new_comments = json.load(f)
+    """
 
     # Calculate statistics
     db_statistics = calculate_statistics(db_client, new_posts, new_comments, start_date, end_date)
     new_entries = new_posts + new_comments
-    db_top_stocks, db_top_emojis  = process_posts(db_client, new_entries, start_date, end_date)
+    db_top_stocks, db_top_emojis, db_top_keywords  = process_posts(db_client, new_entries, start_date, end_date)
 
     # Save all info into DB for this time slot
     app.logger.debug('Writing everything to DB')
@@ -88,21 +90,30 @@ def background_job():
     #db_client.delete_many('top-emojis', {})
     db_client.create('top-emojis', db_top_emojis)
 
+    db_client.delete_many('top-keywords', {})
+    db_client.create_many('top-keywords', db_top_keywords)
+
     # Update total counts
-    db_global_stocks_top = update_top_stocks(db_client)
+    db_global_stocks_top = update_top_stocks(db_client, start_date, end_date)
     db_client.delete_many('top-stocks-global', {})
     db_client.create_many('top-stocks-global', db_global_stocks_top)
 
-    db_global_emojis_top = update_top_emojis(db_client)
+    db_global_emojis_top = update_top_emojis(db_client, start_date, end_date)
     db_client.delete_many('top-emojis-global', {})
     db_client.create_many('top-emojis-global', db_global_emojis_top)
 
-    db_global_stats_top = update_total_stats(db_client, start_date)
+    db_global_stats_top = update_total_stats(db_client, start_date, end_date)
     db_client.delete_many('top-stats-global', {})
     db_client.create('top-stats-global', db_global_stats_top)
 
-    # Then increase/decrease overall stats by deleting last update
-    # TODO
+    db_global_stocks_historic = update_top_stocks_historic(db_client, start_date, end_date)
+    db_client.delete_many('top-stocks-historic', {})
+    db_client.create_many('top-stocks-historic', db_global_stocks_historic)
+
+    # Get all mentioned stocks
+    db_all_stocks = get_all_stocks(db_client)
+    db_client.delete_many('stock-list', {})
+    db_client.create_many('stock-list', db_all_stocks)
 
     app.logger.debug('Job completed')
 
@@ -127,7 +138,7 @@ atexit.register(lambda: scheduler.shutdown())
 
 background_job()
 
-intraday_pricing_data_cron()
+#intraday_pricing_data_cron()
 
 # Other stuff
 from app import routes
