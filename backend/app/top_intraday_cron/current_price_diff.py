@@ -35,7 +35,7 @@ def get_top_k_ticker_data(db_client, FINNHUB_API_KEY, K=10):
     calls API to get current market price and percentage diff from today's open,
     writes the update to DB.
     """
-    top_tickers_data = db_client.find_all('stock-frequency-top', {})[:K]
+    top_tickers_data = db_client.find_all('top-stocks-global', {})[:K]
     # print(top_tickers_data)
     top_tickers_list =  [obj["stock_name"] for obj in top_tickers_data]
     return [fetch_intraday_quote(t, FINNHUB_API_KEY) for t in top_tickers_list]

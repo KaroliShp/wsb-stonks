@@ -30,6 +30,7 @@ def stock_frequency_historic(stock_name):
     stock_frequency = db_client.find_all('top-stocks-historic', { 'stock_name' : stock_name.upper() })
     if stock_frequency:
         stock_frequency = stock_frequency[0]['historic_data']
+        stock_frequency.reverse()
         return jsonify(stock_frequency)
 
 
