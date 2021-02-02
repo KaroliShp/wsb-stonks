@@ -2,7 +2,7 @@ def update_top_stocks(db_client, start_date, end_date):
     global_stocks = {}
 
     K = 24*2
-    all_stocks = db_client.find_k_of('top-stocks', {}, K, sort_by="end_date", ascending=False)
+    all_stocks = db_client.find_k_of('top-stocks', {}, sort_by="end_date", k=K, ascending=False)
 
     # Calculate all stock mentions
     for stocks in all_stocks:
@@ -24,7 +24,7 @@ def update_top_emojis(db_client, start_date, end_date):
     global_emojis = {}
 
     K = 24*2
-    all_emojis = db_client.find_k_of('top-emojis', {}, K, sort_by="end_date", ascending=False)
+    all_emojis = db_client.find_k_of('top-emojis', {}, sort_by="end_date", k=K, ascending=False)
 
     # Calculate all emoji mentions
     for emojis in all_emojis:
@@ -44,7 +44,7 @@ def update_top_emojis(db_client, start_date, end_date):
 
 def update_total_stats(db_client, start_date, end_date):
     K = 24*2
-    all_stats = db_client.find_k_of('statistics', {}, K, sort_by="end_date", ascending=False)
+    all_stats = db_client.find_k_of('statistics', {}, sort_by="end_date", k=K, ascending=False)
 
     total_posts = 0
     total_comments = 0
@@ -102,7 +102,7 @@ def update_total_stats(db_client, start_date, end_date):
 
 def update_top_stocks_historic(db_client, start_date, end_date):
     K = 24*2
-    top_stocks = db_client.find_k_of('top-stocks', {}, K, sort_by="end_date", ascending=False)
+    top_stocks = db_client.find_k_of('top-stocks', {}, sort_by="end_date", k=K, ascending=False)
     
     # Get all mentioned stocks and all possible updates
     all_updates = []

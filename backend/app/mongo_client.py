@@ -32,7 +32,7 @@ class MongoPostRepository(object):
         
         return results
 
-    def find_k_of(self, collection, selector, k, sort_by, ascending=True):
+    def find_k_of(self, collection, selector, sort_by, k=48, ascending=True):
         results = []
 
         order = 1 if ascending else -1 
