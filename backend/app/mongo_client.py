@@ -32,6 +32,17 @@ class MongoPostRepository(object):
         
         return results
 
+    def find_k_of(self, collection, selector, sort_by, k=48, ascending=True):
+        results = []
+
+        order = 1 if ascending else -1 
+
+        cursor = self.db[collection].find(selector).sort({sort_by: order}).limit(k)
+        for item in cursor:
+            item['_id'] = str(item['_id'])
+            results.append(item)
+        
+        return results
 
     def find(self, collection, selector):
         return self.db[collection].find_one(selector)
