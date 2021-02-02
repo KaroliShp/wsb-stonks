@@ -37,7 +37,7 @@ class MongoPostRepository(object):
 
         order = 1 if ascending else -1 
 
-        cursor = self.db[collection].find(selector).sort({sort_by: order}).limit(k)
+        cursor = self.db[collection].find(selector).sort([(sort_by, order)]).limit(k)
         for item in cursor:
             item['_id'] = str(item['_id'])
             results.append(item)
