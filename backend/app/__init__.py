@@ -148,11 +148,18 @@ def intraday_pricing_data_cron():
     app.logger.debug('Intraday cron completed')
 
 
-clean_db()
-app.logger.debug("DB Cleaned")
+def _get_next_cron_datetime():
+    """
+    Finds a datetime when the next main cron should be scheduled
+    """
+    # Query last update time in UTC
+    dtime = db_client.find_all('top-stats-global', {})[0]["last_update"]
+    app.logger.debug("Querried last date and it is: {}".format(dtime))
+    # If no updates have been done (dtime == None), start next cron in 30sec
+    return dtime + timedelta(minutes=30) if dtime else datetime.utcnow() + timedelta(seconds=30)
 
 scheduler = BackgroundScheduler(timezone="UTC")
-scheduler.add_job(func=background_job, trigger="interval", minutes=30, next_run_time=datetime.utcnow() + timedelta(seconds=30))
+scheduler.add_job(func=background_job, trigger="interval", minutes=30, next_run_time=_get_next_cron_datetime())
 scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3, next_run_time=datetime.utcnow() + timedelta(minutes=3))
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
