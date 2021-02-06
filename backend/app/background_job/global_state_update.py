@@ -92,6 +92,7 @@ def update_total_stats(db_client, start_date, end_date):
     statistics['top_post_authors'] = top_post_author
     statistics['top_comments_author'] = top_comments_author
     statistics['last_update'] = start_date
+    
     posts_activity.reverse()
     statistics['posts_activity'] = posts_activity
     comments_activity.reverse()
