@@ -9,6 +9,9 @@ To achieve this, we have created a Flask API that handles interaction with Mongo
 
 In the past, we used to host GCP App Engine serverless computing environment. If you would like to see how to configurate our React SPA and Python/Flask API for GCP App Engine, head over to [App engine branch of this repo](https://github.com/KaroliShp/wsb-stonks/tree/gcp-app-engine).
 
+## Demo (for when the site is down for maintenance or when we run out of $$ / server credits)
+![WSB STONKS DEMO-720p-shorter](https://user-images.githubusercontent.com/25671720/117783148-f1dc4200-b24a-11eb-9b01-31be4c1036c8.gif)
+
 ## 📊 Data Analysis
 
 At the moment, keyword analysis is performed using [pytextrank](https://github.com/DerwenAI/pytextrank). Everything else is built in-house, including stock symbol recognition.
