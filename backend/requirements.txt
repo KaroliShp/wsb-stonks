@@ -56,7 +56,7 @@ thinc==7.4.0
 tqdm==4.45.0
 tzlocal==2.0.0
 update-checker==0.16
-urllib3==1.25.8
+urllib3==1.26.5
 wasabi==0.6.0
 websocket-client==0.57.0
 Werkzeug==1.0.0
