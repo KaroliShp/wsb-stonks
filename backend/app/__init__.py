@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from config import Config
+from config import Config, DeploymentEnv
 from app.mongo_client import MongoPostRepository
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -23,25 +23,28 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 import os
 
-production = bool(os.environ.get("PRODUCTION-SENTRY"))
-if production:
-    sentry_sdk.init(
-        dsn="https://c711d9c16fc043dd897d35d569c8a92d@o378312.ingest.sentry.io/5201503",
-        integrations=[FlaskIntegration()]
-    )
+env = "dev"
 
 # Handle application creation
 app = Flask(__name__)
-app.config.from_object(Config)
+config = Config(env)
+app.config.from_object(config)
 
 # CORS
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+# Sentry
+if config.env == DeploymentEnv.Prod:
+    sentry_sdk.init(
+        dsn="https://c711d9c16fc043dd897d35d569c8a92d@o378312.ingest.sentry.io/5201503",
+        integrations=[FlaskIntegration()]
+    )
+
 # Reddit API via Praw setup
-CLIENT_ID = os.environ.get("PRAW_CLIENT_ID")
-CLIENT_SECRET = os.environ.get("PRAW_CLIENT_SECRET")
-USER_AGENT = os.environ.get("PRAW_USER_AGENT")
+CLIENT_ID = config.config["PRAW_CLIENT_ID"]
+CLIENT_SECRET = config.config["PRAW_CLIENT_SECRET"]
+USER_AGENT = config.config["PRAW_USER_AGENT"]
 
 reddit_fetcher = RedditPostFetcher(CLIENT_ID, CLIENT_SECRET, USER_AGENT)
 
@@ -54,7 +57,7 @@ logger_ref = app.logger
 # Handle database connection
 db_client = MongoPostRepository('wsb-stonks-dev-rytis', logger_ref)
 
-FINNHUB_API_KEY = os.environ.get('FINNHUB_API_KEY')
+FINNHUB_API_KEY = config.config.get('FINNHUB_API_KEY', None)
 
 # Job scheduling
 def background_job():
@@ -153,14 +156,17 @@ def _get_next_cron_datetime():
     Finds a datetime when the next main cron should be scheduled
     """
     # Query last update time in UTC
-    dtime = db_client.find_all('top-stats-global', {})[0]["last_update"]
+    try:
+        dtime = db_client.find_all('top-stats-global', {})[0]["last_update"]
+    except:
+        dtime = None
     app.logger.debug("Querried last date and it is: {}".format(dtime))
     # If no updates have been done (dtime == None), start next cron in 30sec
     return dtime + timedelta(minutes=30) if dtime else datetime.utcnow() + timedelta(seconds=30)
 
 scheduler = BackgroundScheduler(timezone="UTC")
 scheduler.add_job(func=background_job, trigger="interval", minutes=30, next_run_time=_get_next_cron_datetime())
-scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3, next_run_time=datetime.utcnow() + timedelta(minutes=3))
+# scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3, next_run_time=datetime.utcnow() + timedelta(minutes=3))
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
