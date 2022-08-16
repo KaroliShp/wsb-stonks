@@ -14,8 +14,10 @@ class Config(object):
     def __init__(self, environment, secrets_file = "./secrets"):
         config_parser = configparser.ConfigParser()
         config_parser.optionxform = str
-        config_parser.read(secrets_file)
-
+        try:
+            config_parser.read(secrets_file)
+        except:
+            raise Exception("No secrets file found in backend/")
         self.config = dict(config_parser.items("MANDATORY"))
         
         if environment == "dev":
