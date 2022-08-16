@@ -336,8 +336,7 @@ def get_top_keywords_pytextrank(entries):
 
         if len(cleaned_text) >= 90000 or c == (len(raw_text) - 1):
             nlp = spacy.load("en_core_web_sm")
-            tr = pytextrank.TextRank()
-            nlp.add_pipe(tr.PipelineComponent, name="textrank", last=True)
+            nlp.add_pipe("textrank", name="textrank", last=True)
             doc = nlp(cleaned_text)
             for c, r in enumerate(doc._.phrases):
                 if r.text in global_ranks:
@@ -416,7 +415,7 @@ def get_top_emoji(posts):
         data = regex.findall(r'\X', text)
         #flags = regex.findall(u'[\U0001F1E6-\U0001F1FF]', text) 
         for word in data:
-            if any(char in emoji.UNICODE_EMOJI for char in word):
+            if emoji.is_emoji(word):
                 if word in all_emoji:
                     all_emoji[word] += 1
                 else:
