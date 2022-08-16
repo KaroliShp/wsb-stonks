@@ -160,7 +160,7 @@ def _get_next_cron_datetime():
         dtime = db_client.find_all('top-stats-global', {})[0]["last_update"]
     except:
         dtime = None
-    app.logger.debug("Querried last date and it is: {}".format(dtime))
+    app.logger.debug("Queried last main cron date and it is: {}".format(dtime))
     # If no updates have been done (dtime == None), start next cron in 30sec
     return dtime + timedelta(minutes=30) if dtime else datetime.utcnow() + timedelta(seconds=30)
 
