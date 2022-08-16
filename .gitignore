@@ -164,3 +164,5 @@ env_variables.yaml
 
 posts.txt
 comments.txt
+
+**/*.service

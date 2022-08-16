@@ -16,6 +16,21 @@ In the past, we used to host GCP App Engine serverless computing environment. If
 
 At the moment, keyword analysis is performed using [pytextrank](https://github.com/DerwenAI/pytextrank). Everything else is built in-house, including stock symbol recognition.
 
+## Prerequisites for running
+
+To run backend, remember to create a secrets file under `backend/secrets` in INI format with keys for PRAW_CLIENT_ID, PRAW_CLIENT_SECRET, PRAW_USER_AGENT, PRODUCTION_SENTRY, MONGO_URL. Then
+```
+cd backend/
+pip install -r requirements.txt
+export FLASK_APP=main.py
+flask run
+```
+
+To run frontend,
+```
+cd frontend
+npm start
+```
 ## ⚠️ Disclaimer & Terms of Use
 
 Our website is for informational purposes only. Nothing contained on our Site constitutes investment advice, solicitation, recommendation or endorsement of any investment strategies, practices, or individual decisions. By using this website, you have agreed to assume sole responsibility over assessing risks and merits associated with the use of any content found on the Site. Furthermore, you agree not to hold Site's creators liable for any claim for damages arising from any decision based on content on this Site.
