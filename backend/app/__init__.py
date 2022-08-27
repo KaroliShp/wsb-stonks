@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 import json 
 
 from app.background_job.post_fetcher import RedditPostFetcher
+from app.background_job.post_storer import PostStorer
 from app.background_job.post_processor import process_posts
 from app.background_job.stock_frequency import get_stock_freq_historic, get_stock_freq_top
 from app.background_job.keyword_top import get_keywords_top
@@ -22,8 +23,16 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 import os
+import pathlib
 
 env = "dev"
+
+ROOT_DIR = pathlib.PurePath(os.getcwd())
+output_dir_suffix = "reddit-data"
+
+DATA_OUTPUT_PATH : pathlib.PurePath = ROOT_DIR.parent / output_dir_suffix if ('backend' in ROOT_DIR.parts) else ROOT_DIR / output_dir_suffix
+RAW_DATA_PATH = DATA_OUTPUT_PATH / "raw"
+ANNOTATION_DATA_PATH = DATA_OUTPUT_PATH / "for-annotation"
 
 # Handle application creation
 app = Flask(__name__)
@@ -47,6 +56,7 @@ CLIENT_SECRET = config.config["PRAW_CLIENT_SECRET"]
 USER_AGENT = config.config["PRAW_USER_AGENT"]
 
 reddit_fetcher = RedditPostFetcher(CLIENT_ID, CLIENT_SECRET, USER_AGENT)
+post_storer = PostStorer(storage_folder=RAW_DATA_PATH)
 
 # Setup Logging
 import logging
@@ -73,6 +83,11 @@ def background_job():
     # Fetch new created posts since last update
     new_posts= reddit_fetcher.fetch_posts(db_client, start_date, end_date, limit_posts)
     new_comments = reddit_fetcher.fetch_comments(db_client, start_date, end_date, limit_comments)
+    
+    # Store new posts as a csv file
+    post_storer.save_posts(new_posts)
+    # Store new comments as a csv file
+    post_storer.save_comments(new_comments)
     """
     new_posts = []
     with open('posts.txt') as f:
