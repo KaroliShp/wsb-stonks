@@ -10,7 +10,7 @@ class PostStorer:
         output_file_path = self.output_dir / suffix
 
         columns = ["title", "score", "selftext", "created", "author", "url", "timeslot-start", "timeslot-end"]    
-        data = [ [p["title"], p["score"], p["selftext"], p["created"], p["author"], p["url"], p["time_slot"][0], p["time_slot"][1]] for p in new_posts]
+        data = [ [p["title"], p["score"], p["selftext"], p["created"], p["author"], p["url"], p["time_slot"][1], p["time_slot"][0]] for p in new_posts]
 
         df = pd.DataFrame(data, columns = columns)
         df.to_csv(output_file_path, encoding='utf-8')
@@ -22,7 +22,7 @@ class PostStorer:
                     
         columns = ["body", "author", "created", "url", "timeslot-start", "timeslot-end"]
 
-        data = [ [c["body"], c["author"], c["created"], c["url"], c["time_slot"][0], c["time_slot"][1]] for c in new_comments]
+        data = [ [c["body"], c["author"], c["created"], c["url"], c["time_slot"][1], c["time_slot"][0]] for c in new_comments]
         df = pd.DataFrame(data, columns = columns)
         df.to_csv(output_file_path, encoding='utf-8')
 
