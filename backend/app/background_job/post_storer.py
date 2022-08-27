@@ -25,3 +25,16 @@ class PostStorer:
         data = [ [c["body"], c["author"], c["created"], c["url"], c["time_slot"][0], c["time_slot"][1]] for c in new_comments]
         df = pd.DataFrame(data, columns = columns)
         df.to_csv(output_file_path, encoding='utf-8')
+
+
+if __name__ == "__main__":
+    import json
+    ps = PostStorer(PurePath("/home/rytis/Desktop/wsb-stonks/reddit-data"))
+
+    with open('../../posts.txt') as f:
+        new_posts = json.loads(f.read())
+        ps.save_posts(new_posts)
+
+    with open('../../comments.txt') as f:
+        new_comments = json.load(f)
+        ps.save_comments(new_comments)
