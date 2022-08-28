@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+from nlp_engine.annotation_preprocessor import AnnotationPreprocessor
 from config import Config, DeploymentEnv
 from app.mongo_client import MongoPostRepository
 import atexit
@@ -27,10 +28,10 @@ import pathlib
 
 env = "dev"
 
-ROOT_DIR = pathlib.PurePath(os.getcwd())
+ROOT_DIR = pathlib.Path(os.getcwd())
 output_dir_suffix = "reddit-data"
 
-DATA_OUTPUT_PATH : pathlib.PurePath = ROOT_DIR.parent / output_dir_suffix if ('backend' in ROOT_DIR.parts) else ROOT_DIR / output_dir_suffix
+DATA_OUTPUT_PATH : pathlib.Path = ROOT_DIR.parent / output_dir_suffix if ('backend' in ROOT_DIR.parts) else ROOT_DIR / output_dir_suffix
 RAW_DATA_PATH = DATA_OUTPUT_PATH / "raw"
 ANNOTATION_DATA_PATH = DATA_OUTPUT_PATH / "for-annotation"
 
@@ -57,6 +58,7 @@ USER_AGENT = config.config["PRAW_USER_AGENT"]
 
 reddit_fetcher = RedditPostFetcher(CLIENT_ID, CLIENT_SECRET, USER_AGENT)
 post_storer = PostStorer(storage_folder=RAW_DATA_PATH)
+annot_preprocessor = AnnotationPreprocessor(RAW_DATA_PATH, ANNOTATION_DATA_PATH)
 
 # Setup Logging
 import logging
@@ -70,9 +72,9 @@ db_client = MongoPostRepository('wsb-stonks-dev-rytis', logger_ref)
 FINNHUB_API_KEY = config.config.get('FINNHUB_API_KEY', None)
 
 # Job scheduling
-def background_job():
+def reddit_data_fetching_and_NER_job():
     # Get the latest update
-    app.logger.debug("Started background job")
+    app.logger.debug("Started Reddit Data Collection and NER background job")
     start_date = datetime.utcnow().replace(microsecond=0)  # current update time
     end_date = start_date - timedelta(hours=0.5)
     limit_posts = 500
@@ -97,6 +99,8 @@ def background_job():
     with open('comments.txt') as f:
         new_comments = json.load(f)
     """
+
+    annot_preprocessor.save_in_annotation_format()
 
     # Calculate statistics
     db_statistics = calculate_statistics(db_client, new_posts, new_comments, start_date, end_date)
@@ -140,7 +144,10 @@ def background_job():
     db_client.delete_many('stock-list', {})
     db_client.create_many('stock-list', db_all_stocks)
 
-    app.logger.debug('Job completed')
+    app.logger.debug('Reddit Data Collection and NER Background Job completed')
+
+def data_prep_for_annotation_job():
+    annot_preprocessor.save_in_annotation_format()
 
 
 def clean_db():
@@ -180,12 +187,12 @@ def _get_next_cron_datetime():
     return dtime + timedelta(minutes=30) if dtime else datetime.utcnow() + timedelta(seconds=30)
 
 scheduler = BackgroundScheduler(timezone="UTC")
-scheduler.add_job(func=background_job, trigger="interval", minutes=30, next_run_time=_get_next_cron_datetime())
+scheduler.add_job(func=reddit_data_fetching_and_NER_job, trigger="interval", minutes=30, next_run_time=_get_next_cron_datetime())
 # scheduler.add_job(func=intraday_pricing_data_cron, trigger='interval', minutes=3, next_run_time=datetime.utcnow() + timedelta(minutes=3))
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
-#background_job()
+reddit_data_fetching_and_NER_job()
 
 #intraday_pricing_data_cron()
 
