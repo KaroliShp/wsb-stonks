@@ -6,7 +6,8 @@ class PostStorer:
         self.output_dir = storage_folder
 
     def save_posts(self, new_posts) -> None:
-        suffix = f"posts-from-{new_posts[-1]['created']}-to-{new_posts[0]['created']}.csv"
+        min_datetime, max_datetime = min(p["created"] for p in new_posts), max(p["created"] for p in new_posts)  
+        suffix = f"posts-from-{min_datetime}-to-{max_datetime}.csv"
         output_file_path = self.output_dir / suffix
 
         columns = ["title", "score", "selftext", "created", "author", "url", "timeslot-start", "timeslot-end"]    
@@ -17,7 +18,8 @@ class PostStorer:
 
 
     def save_comments(self, new_comments) -> None:
-        suffix = f"comments-from-{new_comments[-1]['created']}-to-{new_comments[0]['created']}.csv"
+        min_datetime, max_datetime = min(comment["created"] for comment in new_comments), max(comment["created"] for comment in new_comments)  
+        suffix = f"comments-from-{min_datetime}-to-{max_datetime}.csv"
         output_file_path = self.output_dir / suffix
                     
         columns = ["body", "author", "created", "url", "timeslot-start", "timeslot-end"]
