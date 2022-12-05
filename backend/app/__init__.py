@@ -28,6 +28,7 @@ env = "dev"
 # Handle application creation
 app = Flask(__name__)
 config = Config(env)
+print(f"Config is: {config}")
 app.config.from_object(config)
 
 # CORS
@@ -55,7 +56,7 @@ app.logger.setLevel(logging.DEBUG)
 logger_ref = app.logger
 
 # Handle database connection
-db_client = MongoPostRepository('wsb-stonks-dev-rytis', logger_ref)
+db_client = MongoPostRepository(config, 'wsb-stonks-dev-rytis', logger_ref)
 
 FINNHUB_API_KEY = config.config.get('FINNHUB_API_KEY', None)
 

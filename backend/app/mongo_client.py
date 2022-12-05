@@ -6,9 +6,8 @@ from pymongo.errors import ConnectionFailure, BulkWriteError
 class MongoPostRepository(object):
 
 
-    def __init__(self, database, logger_ref):
-        mongo_url = os.environ.get('MONGO_URL')
-        client = MongoClient(mongo_url)
+    def __init__(self, config, database, logger_ref):
+        client = MongoClient(config["MONGO_URL"])
         self.logger = logger_ref
         
         try:
