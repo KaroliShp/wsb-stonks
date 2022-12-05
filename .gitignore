@@ -166,3 +166,4 @@ posts.txt
 comments.txt
 
 **/*.service
+reddit-data/

@@ -8,6 +8,7 @@ class MongoPostRepository(object):
 
     def __init__(self, config, database, logger_ref):
         client = MongoClient(config["MONGO_URL"])
+        print(f"Mongo Client is {client}")
         self.logger = logger_ref
         
         try:
